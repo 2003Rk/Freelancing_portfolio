@@ -36,3 +36,77 @@
     transform: rotate(360deg);
   }
 }
+
+/* Rainbow Water Effect Animations */
+@keyframes gradient-shift {
+  0% {
+    transform: translate(0%, 0%) scale(1);
+    opacity: 0.7;
+  }
+  33% {
+    transform: translate(30%, -20%) scale(1.1);
+    opacity: 0.8;
+  }
+  66% {
+    transform: translate(-20%, 30%) scale(1.05);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translate(0%, 0%) scale(1);
+    opacity: 0.7;
+  }
+}
+
+@keyframes gradient-shift-reverse {
+  0% {
+    transform: translate(0%, 0%) scale(1.1) rotate(0deg);
+    opacity: 0.6;
+  }
+  33% {
+    transform: translate(-30%, 20%) scale(1) rotate(120deg);
+    opacity: 0.8;
+  }
+  66% {
+    transform: translate(20%, -30%) scale(1.15) rotate(240deg);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(0%, 0%) scale(1.1) rotate(360deg);
+    opacity: 0.6;
+  }
+}
+
+@keyframes gradient-wave {
+  0% {
+    transform: translateX(0%) translateY(0%) scale(1);
+    filter: hue-rotate(0deg) blur(40px);
+  }
+  25% {
+    transform: translateX(10%) translateY(-15%) scale(1.2);
+    filter: hue-rotate(90deg) blur(50px);
+  }
+  50% {
+    transform: translateX(-10%) translateY(10%) scale(0.9);
+    filter: hue-rotate(180deg) blur(60px);
+  }
+  75% {
+    transform: translateX(15%) translateY(-10%) scale(1.1);
+    filter: hue-rotate(270deg) blur(50px);
+  }
+  100% {
+    transform: translateX(0%) translateY(0%) scale(1);
+    filter: hue-rotate(360deg) blur(40px);
+  }
+}
+
+.animate-gradient-shift {
+  animation: gradient-shift 15s ease-in-out infinite;
+}
+
+.animate-gradient-shift-reverse {
+  animation: gradient-shift-reverse 20s ease-in-out infinite;
+}
+
+.animate-gradient-wave {
+  animation: gradient-wave 25s ease-in-out infinite;
+}

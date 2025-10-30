@@ -1,3 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Faster smooth scrolling - removed to use JavaScript instead */
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -10,4 +16,170 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* Auto-scroll animation for client proof section */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 30s linear infinite;
+}
+
+.animate-scroll:hover {
+  animation-play-state: paused;
+}
+
+/* Testimonials scroll animation */
+.animate-scroll-testimonials {
+  animation: scroll 60s linear infinite;
+}
+
+.animate-scroll-testimonials:hover {
+  animation-play-state: paused;
+}
+
+/* Image carousel animation for client cards */
+@keyframes scrollImages {
+  0%, 30% {
+    transform: translateX(0);
+  }
+  33%, 63% {
+    transform: translateX(-100%);
+  }
+  66%, 96% {
+    transform: translateX(-200%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.animate-scroll-images {
+  animation: scrollImages 12s ease-in-out infinite;
+}
+
+.animate-scroll-images:hover {
+  animation-play-state: paused;
+}
+
+/* 3D Effects for Client Proof Cards */
+.proof-card-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.proof-card-3d:hover {
+  transform: perspective(1000px) rotateY(-5deg) rotateX(2deg) translateZ(20px);
+}
+
+/* Enhanced modal animations */
+@keyframes modalSlideIn {
+  0% {
+    opacity: 0;
+    transform: perspective(1000px) rotateY(45deg) rotateX(15deg) scale(0.8) translateZ(-200px);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(1000px) rotateY(0deg) rotateX(5deg) scale(1.1) translateZ(0px);
+  }
+}
+
+.modal-3d-enter {
+  animation: modalSlideIn 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Floating animation for modal */
+@keyframes float {
+  0%, 100% {
+    transform: perspective(1000px) rotateY(0deg) rotateX(5deg) scale(1.1) translateY(0px);
+  }
+  50% {
+    transform: perspective(1000px) rotateY(0deg) rotateX(5deg) scale(1.1) translateY(-10px);
+  }
+}
+
+.modal-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Smoke Effect Canvas */
+#fluid {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+/* Optional: Hide cursor in hero section for cleaner smoke effect */
+section:first-of-type {
+  cursor: none;
+}
+
+/* Mobile Responsive Utilities */
+@media (max-width: 640px) {
+  /* Hero section responsive */
+  .hero-title {
+    font-size: 2.5rem !important;
+    line-height: 1.1 !important;
+  }
+  
+  /* Section padding */
+  section {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  
+  /* Grid responsive */
+  .grid-responsive {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+  
+  /* Client cards responsive */
+  .client-card {
+    width: 280px !important;
+    height: 320px !important;
+  }
+  
+  /* Testimonial cards responsive */
+  .testimonial-card {
+    width: 320px !important;
+    height: 280px !important;
+  }
+  
+  /* Modal responsive */
+  .modal-responsive {
+    max-width: 90vw !important;
+    margin: 1rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* About section skills grid */
+  .skills-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+  
+  /* Projects grid */
+  .projects-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  /* Large tablet adjustments */
+  .lg-responsive {
+    padding: 2rem !important;
+  }
 }
