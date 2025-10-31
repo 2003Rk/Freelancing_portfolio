@@ -2,6 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Mobile scrolling fixes */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure all sections allow proper scrolling */
+section {
+  touch-action: pan-y;
+}
+
+/* Fix for modals and overlays */
+.modal-overlay {
+  touch-action: none;
+}
+
+.modal-content {
+  touch-action: auto;
+}
+
+/* Prevent scroll blocking on interactive elements */
+button, a, input, textarea {
+  touch-action: manipulation;
+}
+
 /* Faster smooth scrolling - removed to use JavaScript instead */
 
 body {
@@ -11,6 +35,29 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Enable proper touch scrolling on mobile */
+  touch-action: manipulation;
+  /* Prevent overscroll bounce effect that can interfere with scrolling */
+  overscroll-behavior: none;
+  /* Fix iOS Safari scrolling issues */
+  position: relative;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+
+/* Ensure html element also supports proper scrolling */
+html {
+  touch-action: manipulation;
+  -webkit-overflow-scrolling: touch;
+  /* Fix iOS Safari viewport height issues */
+  height: -webkit-fill-available;
+}
+
+/* Fix for iOS Safari */
+@supports (-webkit-touch-callout: none) {
+  body {
+    min-height: -webkit-fill-available;
+  }
 }
 
 code {
@@ -30,6 +77,8 @@ code {
 
 .animate-scroll {
   animation: scroll 30s linear infinite;
+  will-change: transform;
+  transform: translateZ(0); /* Force hardware acceleration */
 }
 
 .animate-scroll:hover {
@@ -39,10 +88,82 @@ code {
 /* Testimonials scroll animation */
 .animate-scroll-testimonials {
   animation: scroll 60s linear infinite;
+  will-change: transform;
+  transform: translateZ(0); /* Force hardware acceleration */
 }
 
 .animate-scroll-testimonials:hover {
   animation-play-state: paused;
+}
+
+/* Performance optimizations for animations */
+@media (prefers-reduced-motion: reduce) {
+  .animate-scroll,
+  .animate-scroll-testimonials,
+  .animate-pulse,
+  .animate-ping,
+  .animate-spin {
+    animation-duration: 0s;
+  }
+}
+
+/* GPU acceleration for smooth animations */
+.animate-pulse,
+.animate-ping,
+.animate-spin,
+.animate-scroll,
+.animate-scroll-testimonials {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+/* Optimize heavy elements */
+.backdrop-blur-xl {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Smooth scrolling for manual navigation */
+.scroll-container {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Hide scrollbars but keep functionality */
+.scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll-container {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Optimize smoke effect canvas */
+canvas {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Performance optimizations for background elements */
+.smoke-fallback {
+  will-change: opacity, transform;
+  transform: translateZ(0);
+}
+
+/* Reduce animation complexity on low-end devices */
+@media (max-width: 768px) {
+  .animate-pulse {
+    animation-duration: 3s; /* Slower animations on mobile */
+  }
+}
+
+/* Disable heavy animations on very low-end devices */
+@media (pointer: coarse) and (max-resolution: 150dpi) {
+  .animate-pulse,
+  .animate-ping {
+    animation: none;
+  }
 }
 
 /* Image carousel animation for client cards */

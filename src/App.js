@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Github, Linkedin, Mail, Star, MapPin, Code, Briefcase, Users, ArrowUpRight, ChevronDown, Terminal, Sparkles, ChevronRight, ChevronLeft, X } from 'lucide-react';
 import { fetchClientsData, fetchReviewsData } from './services/firebaseService';
-import SmokeEffect from './components/SmokeEffect';
+import SmokeEffectWrapper from './components/SmokeEffectWrapper';
+import OptimizedImage from './components/OptimizedImage';
 
 export default function App() {
   const [scrolled, setScrolled] = useState(false);
@@ -13,7 +14,15 @@ export default function App() {
   const [reviewsData, setReviewsData] = useState([]);
   const [loadingReviews, setLoadingReviews] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [clientScrollIndex, setClientScrollIndex] = useState(0);
+  const [testimonialScrollIndex, setTestimonialScrollIndex] = useState(0);
+  const [isClientAutoPlaying, setIsClientAutoPlaying] = useState(true);
+  const [isTestimonialAutoPlaying, setIsTestimonialAutoPlaying] = useState(true);
+  const [clientTouchStart, setClientTouchStart] = useState(null);
+  const [testimonialTouchStart, setTestimonialTouchStart] = useState(null);
   const gradientRef = useRef(null);
+  const clientScrollRef = useRef(null);
+  const testimonialScrollRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,19 +32,150 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Preload critical images
+  useEffect(() => {
+    const preloadImage = (src) => {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'image';
+      link.href = src;
+      document.head.appendChild(link);
+    };
+
+    // Preload profile image
+    preloadImage('/IMG_8706.PNG');
+  }, []);
+
+  // Client scroll functions
+  const scrollClientsLeft = () => {
+    setIsClientAutoPlaying(false);
+    setClientScrollIndex((prev) => Math.max(0, prev - 1));
+    setTimeout(() => setIsClientAutoPlaying(true), 5000); // Resume auto-play after 5s
+  };
+
+  const scrollClientsRight = () => {
+    setIsClientAutoPlaying(false);
+    const maxIndex = Math.max(0, clientsData.length - 3); // Show 3 cards at once
+    setClientScrollIndex((prev) => Math.min(maxIndex, prev + 1));
+    setTimeout(() => setIsClientAutoPlaying(true), 5000); // Resume auto-play after 5s
+  };
+
+  // Testimonial scroll functions
+  const scrollTestimonialsLeft = () => {
+    setIsTestimonialAutoPlaying(false);
+    setTestimonialScrollIndex((prev) => Math.max(0, prev - 1));
+    setTimeout(() => setIsTestimonialAutoPlaying(true), 5000); // Resume auto-play after 5s
+  };
+
+  const scrollTestimonialsRight = () => {
+    setIsTestimonialAutoPlaying(false);
+    const maxIndex = Math.max(0, reviewsData.length - 3); // Show 3 cards at once
+    setTestimonialScrollIndex((prev) => Math.min(maxIndex, prev + 1));
+    setTimeout(() => setIsTestimonialAutoPlaying(true), 5000); // Resume auto-play after 5s
+  };
+
+  // Touch/Swipe handlers for mobile
+  const handleTouchStart = (setTouchStart) => (e) => {
+    setTouchStart(e.touches[0].clientX);
+  };
+
+  const handleTouchMove = (touchStart, scrollLeft, scrollRight, setAutoPlay) => (e) => {
+    if (!touchStart) return;
+    const touchEnd = e.touches[0].clientX;
+    const diff = touchStart - touchEnd;
+    
+    if (Math.abs(diff) > 50) { // Minimum swipe distance
+      setAutoPlay(false);
+      if (diff > 0) {
+        scrollRight();
+      } else {
+        scrollLeft();
+      }
+    }
+  };
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      
+      switch(e.key) {
+        case 'ArrowLeft':
+          if (e.shiftKey) {
+            scrollTestimonialsLeft();
+          } else {
+            scrollClientsLeft();
+          }
+          break;
+        case 'ArrowRight':
+          if (e.shiftKey) {
+            scrollTestimonialsRight();
+          } else {
+            scrollClientsRight();
+          }
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [clientsData.length, reviewsData.length]);
+
+  // Performance monitoring (development only)
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🚀 App initialized at:', performance.now(), 'ms');
+      
+      // Monitor Core Web Vitals
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          if (entry.entryType === 'largest-contentful-paint') {
+            console.log('📊 LCP:', entry.startTime, 'ms');
+          }
+          if (entry.entryType === 'first-input') {
+            console.log('🖱️ FID:', entry.processingStart - entry.startTime, 'ms');
+          }
+        }
+      });
+      
+      try {
+        observer.observe({ entryTypes: ['largest-contentful-paint', 'first-input'] });
+      } catch (e) {
+        // Browser doesn't support these metrics
+      }
+
+      // Log SmokeEffect loading time
+      const smokeLoadStart = performance.now();
+      const checkSmokeLoad = () => {
+        const smokeCanvas = document.querySelector('canvas');
+        if (smokeCanvas && smokeCanvas.style.opacity === '1') {
+          console.log('💨 SmokeEffect loaded in:', performance.now() - smokeLoadStart, 'ms');
+        } else {
+          requestAnimationFrame(checkSmokeLoad);
+        }
+      };
+      setTimeout(checkSmokeLoad, 1000);
+
+      return () => observer.disconnect();
+    }
+  }, []);
+
   // Fast smooth scroll for anchor links
   useEffect(() => {
     const handleAnchorClick = (e) => {
       const target = e.target.closest('a[href^="#"]');
-      if (target) {
-        e.preventDefault();
-        const id = target.getAttribute('href').slice(1);
-        const element = document.getElementById(id);
-        if (element) {
-          element.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start',
-          });
+      if (target && e.type === 'click') {
+        // Only prevent default for actual clicks, not touch events during scrolling
+        if (!e.touches) {
+          e.preventDefault();
+          const id = target.getAttribute('href').slice(1);
+          const element = document.getElementById(id);
+          if (element) {
+            element.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start',
+            });
+          }
         }
       }
     };
@@ -51,8 +191,11 @@ export default function App() {
     let mouseTimer;
 
     const handleMouseMove = (e) => {
-      targetX = (e.clientX / window.innerWidth) * 100;
-      targetY = (e.clientY / window.innerHeight) * 100;
+      // Only handle mouse events, not touch events to avoid mobile scrolling issues
+      if (e.type === 'mousemove' && !('ontouchstart' in window)) {
+        targetX = (e.clientX / window.innerWidth) * 100;
+        targetY = (e.clientY / window.innerHeight) * 100;
+      }
     };
 
     const animate = () => {
@@ -292,7 +435,7 @@ export default function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100">
+    <div className="min-h-screen bg-zinc-950 text-zinc-100" style={{ touchAction: 'pan-y' }}>
 
       {/* Header */}
       <header className={`fixed top-0 w-full z-40 transition-all duration-500 ${scrolled ? 'bg-zinc-950/90 backdrop-blur-xl border-b border-zinc-800/50' : 'bg-transparent'}`}>
@@ -339,7 +482,7 @@ export default function App() {
       {/* Hero Section */}
       <section className="min-h-screen flex items-center justify-center px-4 sm:px-6 relative overflow-hidden bg-black">
         {/* Smoke Cursor Effect */}
-        <SmokeEffect />
+        <SmokeEffectWrapper />
 
         <div className="container mx-auto text-center relative z-10">
           {/* Profile Photo with Floating Animation */}
@@ -351,10 +494,11 @@ export default function App() {
               
               {/* Photo container */}
               <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-emerald-500/50 p-1 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 backdrop-blur-sm hover:border-emerald-400 transition-all duration-500 hover:scale-105 group-hover:shadow-2xl group-hover:shadow-emerald-500/30">
-                <img 
+                <OptimizedImage 
                   src="/IMG_8706.PNG"
                   alt="Rahul Kumar - Software Engineer"
                   className="w-full h-full rounded-full object-cover"
+                  loading="eager"
                 />
                 {/* Active status indicator */}
                 <div className="absolute bottom-2 right-2 w-4 h-4 sm:w-5 sm:h-5 bg-emerald-400 rounded-full border-2 sm:border-4 border-zinc-950 animate-pulse"></div>
@@ -418,8 +562,11 @@ export default function App() {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6">
-        <div className="container mx-auto max-w-5xl">
+      <section id="about" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 relative overflow-hidden">
+        {/* Smoke Effect Background */}
+        <SmokeEffectWrapper />
+        
+        <div className="container mx-auto max-w-5xl relative z-10">
           <div className="grid md:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
             <div>
               <div className="text-xs sm:text-sm text-emerald-400 mb-4 tracking-wider uppercase">About Me</div>
@@ -628,15 +775,36 @@ export default function App() {
           <div className="text-center mb-12">
             <div className="text-sm text-emerald-400 mb-4 tracking-wider uppercase">Client Proof</div>
             <h2 className="text-5xl font-light mb-6">Real Results, Real Clients</h2>
-            <p className="text-zinc-400">Chat screenshots and payment confirmations from satisfied clients</p>
+            <p className="text-zinc-400 mb-2">Chat screenshots and payment confirmations from satisfied clients</p>
+            <p className="text-xs text-zinc-600">💡 Use arrow keys or click the navigation buttons to browse manually</p>
           </div>
         </div>
 
-        {/* Auto-scrolling container */}
+        {/* Auto-scrolling container with manual controls */}
         <div className="relative">
           {/* Gradient overlays */}
-          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-zinc-950 to-transparent z-10"></div>
-          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-zinc-950 to-transparent z-10"></div>
+          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-zinc-950 to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-zinc-950 to-transparent z-10 pointer-events-none"></div>
+          
+          {/* Manual Navigation Buttons */}
+          {!loadingClients && clientsData.length > 3 && (
+            <>
+              <button
+                onClick={scrollClientsLeft}
+                disabled={clientScrollIndex === 0}
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-zinc-900/90 border border-zinc-700 hover:border-emerald-500 hover:bg-emerald-500/10 transition-all duration-300 flex items-center justify-center group z-20 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft className="w-6 h-6 text-zinc-400 group-hover:text-emerald-400 transition-colors" />
+              </button>
+              <button
+                onClick={scrollClientsRight}
+                disabled={clientScrollIndex >= Math.max(0, clientsData.length - 3)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-zinc-900/90 border border-zinc-700 hover:border-emerald-500 hover:bg-emerald-500/10 transition-all duration-300 flex items-center justify-center group z-20 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronRight className="w-6 h-6 text-zinc-400 group-hover:text-emerald-400 transition-colors" />
+              </button>
+            </>
+          )}
 
           {/* Loading State */}
           {loadingClients ? (
@@ -660,7 +828,19 @@ export default function App() {
               No client data available yet.
             </div>
           ) : (
-            <div className="flex gap-6 animate-scroll">
+            <div 
+              ref={clientScrollRef}
+              className={`flex gap-6 transition-transform duration-500 ${isClientAutoPlaying ? 'animate-scroll' : ''}`}
+              style={{
+                transform: `translateX(-${clientScrollIndex * (320 + 24)}px)`, // 320px card width + 24px gap
+                animationPlayState: isClientAutoPlaying ? 'running' : 'paused'
+              }}
+              onMouseEnter={() => setIsClientAutoPlaying(false)}
+              onMouseLeave={() => setIsClientAutoPlaying(true)}
+              onTouchStart={handleTouchStart(setClientTouchStart)}
+              onTouchMove={handleTouchMove(clientTouchStart, scrollClientsLeft, scrollClientsRight, setIsClientAutoPlaying)}
+              onTouchEnd={() => setClientTouchStart(null)}
+            >
               {/* Client proof cards from Firebase */}
               {clientsData.map((client, index) => (
                 <div 
@@ -821,8 +1001,27 @@ export default function App() {
             </div>
           )}
         </div>
-
-       
+        
+        {/* Scroll Indicators */}
+        {!loadingClients && clientsData.length > 3 && (
+          <div className="flex justify-center gap-2 mt-8">
+            {Array.from({ length: Math.max(0, clientsData.length - 2) }).map((_, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  setIsClientAutoPlaying(false);
+                  setClientScrollIndex(index);
+                  setTimeout(() => setIsClientAutoPlaying(true), 5000);
+                }}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  clientScrollIndex === index 
+                    ? 'bg-emerald-400 w-8' 
+                    : 'bg-zinc-600 hover:bg-zinc-500'
+                }`}
+              />
+            ))}
+          </div>
+        )}
       </section>
 
       {/* 3D Zoomed Client Proof Modal */}
@@ -997,9 +1196,10 @@ export default function App() {
         
             </div>
             <h2 className="text-5xl md:text-6xl font-light mb-6">What Clients Say</h2>
-            <p className="text-zinc-400 max-w-2xl mx-auto">
+            <p className="text-zinc-400 max-w-2xl mx-auto mb-2">
               Real feedback from satisfied clients across the globe. Each review represents a successful project and lasting partnership.
             </p>
+            <p className="text-xs text-zinc-600">💡 Use Shift + arrow keys, navigation buttons, or swipe to browse testimonials</p>
             
             {/* Stats Bar */}
             <div className="flex items-center justify-center gap-8 mt-12 p-6 bg-zinc-800/30 border border-zinc-800 rounded-2xl backdrop-blur-sm max-w-2xl mx-auto">
@@ -1033,8 +1233,28 @@ export default function App() {
           {/* Animated Testimonials Scrolling Container */}
           <div className="relative overflow-hidden mb-12">
             {/* Gradient Overlays */}
-            <div className="absolute left-0 top-0 w-20 h-full bg-gradient-to-r from-zinc-950 via-zinc-950/80 to-transparent z-10"></div>
-            <div className="absolute right-0 top-0 w-20 h-full bg-gradient-to-l from-zinc-950 via-zinc-950/80 to-transparent z-10"></div>
+            <div className="absolute left-0 top-0 w-20 h-full bg-gradient-to-r from-zinc-950 via-zinc-950/80 to-transparent z-10 pointer-events-none"></div>
+            <div className="absolute right-0 top-0 w-20 h-full bg-gradient-to-l from-zinc-950 via-zinc-950/80 to-transparent z-10 pointer-events-none"></div>
+            
+            {/* Manual Navigation Buttons */}
+            {!loadingReviews && reviewsData.length > 3 && (
+              <>
+                <button
+                  onClick={scrollTestimonialsLeft}
+                  disabled={testimonialScrollIndex === 0}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-zinc-900/90 border border-zinc-700 hover:border-emerald-500 hover:bg-emerald-500/10 transition-all duration-300 flex items-center justify-center group z-20 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ChevronLeft className="w-6 h-6 text-zinc-400 group-hover:text-emerald-400 transition-colors" />
+                </button>
+                <button
+                  onClick={scrollTestimonialsRight}
+                  disabled={testimonialScrollIndex >= Math.max(0, reviewsData.length - 3)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-zinc-900/90 border border-zinc-700 hover:border-emerald-500 hover:bg-emerald-500/10 transition-all duration-300 flex items-center justify-center group z-20 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ChevronRight className="w-6 h-6 text-zinc-400 group-hover:text-emerald-400 transition-colors" />
+                </button>
+              </>
+            )}
             
             {/* Loading State */}
             {loadingReviews ? (
@@ -1066,9 +1286,20 @@ export default function App() {
                 No reviews available yet.
               </div>
             ) : (
-              <div className="flex gap-6 animate-scroll-testimonials" style={{
-                width: `${reviewsData.length * 400 * 2}px`
-              }}>
+              <div 
+                ref={testimonialScrollRef}
+                className={`flex gap-6 transition-transform duration-500 ${isTestimonialAutoPlaying ? 'animate-scroll-testimonials' : ''}`}
+                style={{
+                  width: `${reviewsData.length * 400 * 2}px`,
+                  transform: `translateX(-${testimonialScrollIndex * (400 + 24)}px)`, // 400px card width + 24px gap
+                  animationPlayState: isTestimonialAutoPlaying ? 'running' : 'paused'
+                }}
+                onMouseEnter={() => setIsTestimonialAutoPlaying(false)}
+                onMouseLeave={() => setIsTestimonialAutoPlaying(true)}
+                onTouchStart={handleTouchStart(setTestimonialTouchStart)}
+                onTouchMove={handleTouchMove(testimonialTouchStart, scrollTestimonialsLeft, scrollTestimonialsRight, setIsTestimonialAutoPlaying)}
+                onTouchEnd={() => setTestimonialTouchStart(null)}
+              >
                 {/* First Set - Real Firebase Data */}
                 {reviewsData.map((review, i) => (
                   <div key={`first-${review.id || i}`} className="group relative p-6 border border-zinc-800 rounded-2xl hover:border-emerald-500/50 hover:bg-zinc-900/50 transition-all duration-500 hover:-translate-y-2 hover:shadow-xl hover:shadow-emerald-500/10 flex-shrink-0 w-96 h-80">
@@ -1189,6 +1420,27 @@ export default function App() {
               </div>
             )}
           </div>
+          
+          {/* Scroll Indicators */}
+          {!loadingReviews && reviewsData.length > 3 && (
+            <div className="flex justify-center gap-2 mb-8">
+              {Array.from({ length: Math.max(0, reviewsData.length - 2) }).map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    setIsTestimonialAutoPlaying(false);
+                    setTestimonialScrollIndex(index);
+                    setTimeout(() => setIsTestimonialAutoPlaying(true), 5000);
+                  }}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    testimonialScrollIndex === index 
+                      ? 'bg-emerald-400 w-8' 
+                      : 'bg-zinc-600 hover:bg-zinc-500'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
           
           {/* Call to Action */}
           <div className="text-center">

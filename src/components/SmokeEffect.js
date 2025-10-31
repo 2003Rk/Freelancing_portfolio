@@ -19,9 +19,24 @@ export default function SmokeEffect() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    // Disable effect on very low-end devices or if user prefers reduced motion
+    if (navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4) {
+      canvas.style.display = 'none';
+      return;
+    }
+    
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      canvas.style.display = 'none';
+      return;
+    }
+
+    // Show a subtle loading state
+    canvas.style.opacity = '0';
+    canvas.style.transition = 'opacity 1s ease-in-out';
+
     const resizeCanvas = () => {
       const scaleByPixelRatio = (input) => {
-        const pixelRatio = window.devicePixelRatio || 1;
+        const pixelRatio = Math.min(window.devicePixelRatio || 1, 2); // Cap at 2x for performance
         return Math.floor(input * pixelRatio);
       };
 
@@ -29,23 +44,60 @@ export default function SmokeEffect() {
       canvas.height = scaleByPixelRatio(canvas.clientHeight);
     };
 
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
+    // Debounced resize handler for better performance
+    let resizeTimeout;
+    const debouncedResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(resizeCanvas, 250);
+    };
 
-    // Initialize fluid simulation
-    const initFluid = () => {
+    resizeCanvas();
+    window.addEventListener('resize', debouncedResize);
+
+    // Initialize fluid simulation asynchronously
+    const initFluid = async () => {
+      // Use requestAnimationFrame to defer initialization
+      await new Promise(resolve => requestAnimationFrame(resolve));
+      // Detect device capabilities and optimize settings
+      const isMobile = window.innerWidth <= 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const isLowEnd = navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4;
+      const isSlowConnection = navigator.connection && (navigator.connection.effectiveType === 'slow-2g' || navigator.connection.effectiveType === '2g');
+      
+      // Progressive quality settings
+      const getQualitySettings = () => {
+        if (isMobile || isLowEnd || isSlowConnection) {
+          return {
+            SIM_RESOLUTION: 64,
+            DYE_RESOLUTION: 256,
+            CAPTURE_RESOLUTION: 128,
+            DENSITY_DISSIPATION: 5.0,
+            VELOCITY_DISSIPATION: 2.0,
+            PRESSURE_ITERATIONS: 5,
+            CURL: 5,
+            SPLAT_FORCE: 3000,
+            SHADING: false
+          };
+        } else {
+          return {
+            SIM_RESOLUTION: 96, // Reduced from 128 for faster startup
+            DYE_RESOLUTION: 512, // Reduced from 1024 for faster startup
+            CAPTURE_RESOLUTION: 256, // Reduced from 512 for faster startup
+            DENSITY_DISSIPATION: 3.5,
+            VELOCITY_DISSIPATION: 1.2,
+            PRESSURE_ITERATIONS: 15, // Reduced from 20 for faster startup
+            CURL: 15, // Reduced from 20 for faster startup
+            SPLAT_FORCE: 6000,
+            SHADING: true
+          };
+        }
+      };
+      
+      const qualitySettings = getQualitySettings();
+      
       let config = {
-        SIM_RESOLUTION: 128,
-        DYE_RESOLUTION: 1440,
-        CAPTURE_RESOLUTION: 512,
-        DENSITY_DISSIPATION: 3.0,
-        VELOCITY_DISSIPATION: 1.0,
+        ...qualitySettings,
         PRESSURE: 0.1,
-        PRESSURE_ITERATIONS: 20,
-        CURL: 20,
         SPLAT_RADIUS: 1.0,
-        SPLAT_FORCE: 7000,
-        SHADING: true,
         COLOR_UPDATE_SPEED: 15,
         PAUSED: false,
         BACK_COLOR: { r: 0, g: 0, b: 0 },
@@ -968,10 +1020,19 @@ export default function SmokeEffect() {
       };
     };
 
-    const cleanup = initFluid();
+    // Initialize asynchronously to prevent blocking
+    let cleanup;
+    initFluid().then(result => {
+      cleanup = result;
+      // Fade in the canvas once initialized
+      canvas.style.opacity = '1';
+    }).catch(error => {
+      console.warn('SmokeEffect failed to initialize:', error);
+      canvas.style.display = 'none';
+    });
 
     return () => {
-      window.removeEventListener('resize', resizeCanvas);
+      window.removeEventListener('resize', debouncedResize);
       if (cleanup) cleanup();
     };
   }, []);
