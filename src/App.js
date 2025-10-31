@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Github, Linkedin, Mail, Star, MapPin, Code, Briefcase, Users, ArrowUpRight, ChevronDown, Terminal, Sparkles, ChevronRight, ChevronLeft, X } from 'lucide-react';
 import { fetchClientsData, fetchReviewsData } from './services/firebaseService';
 import SmokeEffectWrapper from './components/SmokeEffectWrapper';
@@ -47,32 +47,32 @@ export default function App() {
   }, []);
 
   // Client scroll functions
-  const scrollClientsLeft = () => {
+  const scrollClientsLeft = useCallback(() => {
     setIsClientAutoPlaying(false);
     setClientScrollIndex((prev) => Math.max(0, prev - 1));
     setTimeout(() => setIsClientAutoPlaying(true), 5000); // Resume auto-play after 5s
-  };
+  }, []);
 
-  const scrollClientsRight = () => {
+  const scrollClientsRight = useCallback(() => {
     setIsClientAutoPlaying(false);
     const maxIndex = Math.max(0, clientsData.length - 3); // Show 3 cards at once
     setClientScrollIndex((prev) => Math.min(maxIndex, prev + 1));
     setTimeout(() => setIsClientAutoPlaying(true), 5000); // Resume auto-play after 5s
-  };
+  }, [clientsData.length]);
 
   // Testimonial scroll functions
-  const scrollTestimonialsLeft = () => {
+  const scrollTestimonialsLeft = useCallback(() => {
     setIsTestimonialAutoPlaying(false);
     setTestimonialScrollIndex((prev) => Math.max(0, prev - 1));
     setTimeout(() => setIsTestimonialAutoPlaying(true), 5000); // Resume auto-play after 5s
-  };
+  }, []);
 
-  const scrollTestimonialsRight = () => {
+  const scrollTestimonialsRight = useCallback(() => {
     setIsTestimonialAutoPlaying(false);
     const maxIndex = Math.max(0, reviewsData.length - 3); // Show 3 cards at once
     setTestimonialScrollIndex((prev) => Math.min(maxIndex, prev + 1));
     setTimeout(() => setIsTestimonialAutoPlaying(true), 5000); // Resume auto-play after 5s
-  };
+  }, [reviewsData.length]);
 
   // Touch/Swipe handlers for mobile
   const handleTouchStart = (setTouchStart) => (e) => {
@@ -114,12 +114,15 @@ export default function App() {
             scrollClientsRight();
           }
           break;
+        default:
+          // No action needed for other keys
+          break;
       }
     };
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [clientsData.length, reviewsData.length]);
+  }, [scrollClientsLeft, scrollClientsRight, scrollTestimonialsLeft, scrollTestimonialsRight]);
 
   // Performance monitoring (development only)
   useEffect(() => {
