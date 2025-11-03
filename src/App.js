@@ -55,7 +55,9 @@ export default function App() {
 
   const scrollClientsRight = useCallback(() => {
     setIsClientAutoPlaying(false);
-    const maxIndex = Math.max(0, clientsData.length - 3); // Show 3 cards at once
+    const isMobile = window.innerWidth < 768;
+    const cardsToShow = isMobile ? 1 : 3; // Show 1 card on mobile, 3 on desktop
+    const maxIndex = Math.max(0, clientsData.length - cardsToShow);
     setClientScrollIndex((prev) => Math.min(maxIndex, prev + 1));
     setTimeout(() => setIsClientAutoPlaying(true), 5000); // Resume auto-play after 5s
   }, [clientsData.length]);
@@ -519,34 +521,34 @@ export default function App() {
             </div>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-light mb-4 sm:mb-6 tracking-tight">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light mb-4 sm:mb-6 tracking-tight px-4">
             <span className="text-zinc-400">Software</span>
             <br />
             <span className="font-normal text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-green-500">Engineer</span>
           </h1>
           
-          <p className="text-xl text-zinc-400 mb-12 max-w-2xl mx-auto font-light leading-relaxed">
+          <p className="text-lg sm:text-xl text-zinc-400 mb-8 sm:mb-12 max-w-2xl mx-auto font-light leading-relaxed px-6">
             I’m Rahul Kumar, a full-stack and <br />mobile app developer creating innovative digital experiences.
           </p>
 
-          <div className="flex items-center gap-6 justify-center mb-16">
-            <a href="#contact" className="group px-8 py-4 bg-emerald-500 text-zinc-950 rounded-full hover:bg-emerald-400 transition-all duration-300 flex items-center gap-2 font-medium">
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 justify-center mb-12 sm:mb-16 px-4">
+            <a href="#contact" className="group w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-emerald-500 text-zinc-950 rounded-full hover:bg-emerald-400 transition-all duration-300 flex items-center justify-center gap-2 font-medium text-sm sm:text-base">
               Start a Project
               <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
             </a>
-            <a href="#projects" className="px-8 py-4 border border-zinc-700 rounded-full hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all duration-300 font-medium">
+            <a href="#projects" className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 border border-zinc-700 rounded-full hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all duration-300 font-medium text-sm sm:text-base text-center">
               View Work
             </a>
           </div>
 
-          <div className="flex gap-6 justify-center">
+          <div className="flex gap-4 sm:gap-6 justify-center">
             {[
               { Icon: Github, link: "https://github.com/2003Rk" },
               { Icon: Linkedin, link: "https://www.linkedin.com/in/rahul-kr2000/" },
               { Icon: Mail, link: "mailto:rahulkr99222@gmail.com" }
             ].map(({ Icon, link }, i) => (
-              <a key={i} href={link} className="w-12 h-12 border border-zinc-800 rounded-full flex items-center justify-center hover:border-emerald-500 hover:bg-emerald-500/5 transition-all duration-300 group">
-                <Icon className="w-5 h-5 text-zinc-400 group-hover:text-emerald-400 transition-colors duration-300" />
+              <a key={i} href={link} className="w-12 h-12 sm:w-14 sm:h-14 border border-zinc-800 rounded-full flex items-center justify-center hover:border-emerald-500 hover:bg-emerald-500/5 transition-all duration-300 group touch-manipulation">
+                <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-zinc-400 group-hover:text-emerald-400 transition-colors duration-300" />
               </a>
             ))}
           </div>
@@ -606,39 +608,39 @@ export default function App() {
       </section>
 
       {/* Projects Section */}
-      <section id="projects" className="py-32 px-6 bg-zinc-900/30 relative overflow-x-hidden">
+      <section id="projects" className="py-16 sm:py-24 md:py-32 px-4 sm:px-6 bg-zinc-900/30 relative overflow-x-hidden">
         {/* Decorative Elements */}
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl"></div>
         
         <div className="container mx-auto relative z-10">
-          <div className="text-center mb-20">
+          <div className="text-center mb-12 sm:mb-16 md:mb-20">
             <div className="text-sm text-emerald-400 mb-4 tracking-wider uppercase flex items-center justify-center gap-2">
               <Sparkles className="w-4 h-4" />
               Portfolio Showcase
             </div>
-            <h2 className="text-5xl md:text-6xl font-light mb-6">Featured Projects</h2>
-            <p className="text-zinc-400 max-w-2xl mx-auto">Click on any category to explore projects</p>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light mb-4 sm:mb-6 px-4">Featured Projects</h2>
+            <p className="text-zinc-400 max-w-2xl mx-auto px-6">Click on any category to explore projects</p>
           </div>
           
           {/* Category Cards */}
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto justify-items-center">
+          <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-4xl mx-auto justify-items-center px-4">
             {projectCategories.map((category, index) => (
               <button
                 key={index}
                 onClick={() => handleCategorySelect(category)}
-                className="group relative p-8 rounded-3xl border border-zinc-800 bg-zinc-950/50 hover:border-emerald-500/50 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-500/10 text-left"
+                className="group relative w-full p-6 sm:p-8 rounded-2xl sm:rounded-3xl border border-zinc-800 bg-zinc-950/50 hover:border-emerald-500/50 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-500/10 text-left"
               >
                 {/* Background Gradient */}
                 <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${category.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-2xl`}></div>
                 
                 {/* Icon */}
-                <div className={`text-6xl mb-6 transform group-hover:scale-110 transition-transform duration-300`}>
+                <div className={`text-4xl sm:text-5xl md:text-6xl mb-4 sm:mb-6 transform group-hover:scale-110 transition-transform duration-300`}>
                   {category.icon}
                 </div>
                 
                 {/* Title */}
-                <h3 className="text-2xl font-light mb-3 text-zinc-100 group-hover:text-emerald-400 transition-colors duration-300">
+                <h3 className="text-xl sm:text-2xl font-light mb-2 sm:mb-3 text-zinc-100 group-hover:text-emerald-400 transition-colors duration-300">
                   {category.name}
                 </h3>
                 
@@ -679,33 +681,33 @@ export default function App() {
 
       {/* Project Modal */}
       {selectedCategory && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 modal-backdrop" onClick={handleModalClose}>
-          <div className="relative w-full max-w-6xl max-h-[90vh] overflow-y-auto bg-zinc-950 rounded-3xl border border-zinc-800 shadow-2xl modal-container modal-enter" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-2 sm:p-4 bg-black/90 modal-backdrop" onClick={handleModalClose}>
+          <div className="relative w-full max-w-6xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto bg-zinc-950 rounded-2xl sm:rounded-3xl border border-zinc-800 shadow-2xl modal-container modal-enter mt-4 sm:mt-0" onClick={(e) => e.stopPropagation()}>
             {/* Header */}
-            <div className={`sticky top-0 z-10 p-8 border-b border-zinc-800 bg-gradient-to-r ${selectedCategory.bgGradient}`}>
+            <div className={`sticky top-0 z-10 p-4 sm:p-6 md:p-8 border-b border-zinc-800 bg-gradient-to-r ${selectedCategory.bgGradient}`}>
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="text-5xl">{selectedCategory.icon}</div>
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <div className="text-3xl sm:text-4xl md:text-5xl">{selectedCategory.icon}</div>
                   <div>
-                    <h3 className="text-3xl font-light text-zinc-100">{selectedCategory.name}</h3>
-                    <p className="text-zinc-400 text-sm mt-1">{selectedCategory.projects.length} completed projects</p>
+                    <h3 className="text-xl sm:text-2xl md:text-3xl font-light text-zinc-100">{selectedCategory.name}</h3>
+                    <p className="text-zinc-400 text-xs sm:text-sm mt-1">{selectedCategory.projects.length} completed projects</p>
                   </div>
                 </div>
                 <button
                   onClick={handleModalClose}
-                  className="w-10 h-10 rounded-full border border-zinc-700 hover:border-emerald-500 hover:bg-emerald-500/10 transition-all duration-300 flex items-center justify-center"
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-zinc-700 hover:border-emerald-500 hover:bg-emerald-500/10 transition-all duration-300 flex items-center justify-center flex-shrink-0"
                 >
-                  <X className="w-5 h-5 text-zinc-400 hover:text-emerald-400" />
+                  <X className="w-4 h-4 sm:w-5 sm:h-5 text-zinc-400 hover:text-emerald-400" />
                 </button>
               </div>
             </div>
 
             {/* Projects List */}
-            <div className="p-8 space-y-6">
+            <div className="p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6">
               {selectedCategory.projects.map((project, index) => (
                 <div
                   key={index}
-                  className="group p-6 rounded-2xl border border-zinc-800 bg-zinc-900/30 hover:border-emerald-500/50 hover:bg-zinc-900/50 transition-all duration-300"
+                  className="group p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-zinc-800 bg-zinc-900/30 hover:border-emerald-500/50 hover:bg-zinc-900/50 transition-all duration-300"
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
@@ -784,38 +786,38 @@ export default function App() {
      
       
       {/* Auto-Scrolling Client Proof Section */}
-      <section id="clients" className="py-32 px-6 overflow-x-hidden">
-        <div className="container mx-auto mb-16">
-          <div className="text-center mb-12">
+      <section id="clients" className="py-16 sm:py-24 md:py-32 px-4 sm:px-6 overflow-x-hidden">
+        <div className="container mx-auto mb-12 sm:mb-16">
+          <div className="text-center mb-8 sm:mb-12">
             <div className="text-sm text-emerald-400 mb-4 tracking-wider uppercase">Client Proof</div>
-            <h2 className="text-5xl font-light mb-6">Real Results, Real Clients</h2>
-            <p className="text-zinc-400 mb-2">Chat screenshots and payment confirmations from satisfied clients</p>
-            <p className="text-xs text-zinc-600">💡 Use arrow keys or click the navigation buttons to browse manually</p>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-light mb-4 sm:mb-6 px-4">Real Results, Real Clients</h2>
+            <p className="text-zinc-400 mb-2 px-6 text-sm sm:text-base">Chat screenshots and payment confirmations from satisfied clients</p>
+            <p className="text-xs text-zinc-600 px-6">💡 Use arrow keys or click the navigation buttons to browse manually</p>
           </div>
         </div>
 
         {/* Auto-scrolling container with manual controls */}
         <div className="relative">
           {/* Gradient overlays */}
-          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-zinc-950 to-transparent z-10 pointer-events-none"></div>
-          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-zinc-950 to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-32 bg-gradient-to-r from-zinc-950 to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-32 bg-gradient-to-l from-zinc-950 to-transparent z-10 pointer-events-none"></div>
           
           {/* Manual Navigation Buttons */}
-          {!loadingClients && clientsData.length > 3 && (
+          {!loadingClients && clientsData.length > 1 && (
             <>
               <button
                 onClick={scrollClientsLeft}
                 disabled={clientScrollIndex === 0}
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-zinc-900/90 border border-zinc-700 hover:border-emerald-500 hover:bg-emerald-500/10 transition-all duration-300 flex items-center justify-center group z-20 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-zinc-900/90 border border-zinc-700 hover:border-emerald-500 hover:bg-emerald-500/10 transition-all duration-300 flex items-center justify-center group z-20 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
               >
-                <ChevronLeft className="w-6 h-6 text-zinc-400 group-hover:text-emerald-400 transition-colors" />
+                <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-zinc-400 group-hover:text-emerald-400 transition-colors" />
               </button>
               <button
                 onClick={scrollClientsRight}
-                disabled={clientScrollIndex >= Math.max(0, clientsData.length - 3)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-zinc-900/90 border border-zinc-700 hover:border-emerald-500 hover:bg-emerald-500/10 transition-all duration-300 flex items-center justify-center group z-20 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={clientScrollIndex >= Math.max(0, clientsData.length - (window.innerWidth < 768 ? 1 : 3))}
+                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-zinc-900/90 border border-zinc-700 hover:border-emerald-500 hover:bg-emerald-500/10 transition-all duration-300 flex items-center justify-center group z-20 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
               >
-                <ChevronRight className="w-6 h-6 text-zinc-400 group-hover:text-emerald-400 transition-colors" />
+                <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-zinc-400 group-hover:text-emerald-400 transition-colors" />
               </button>
             </>
           )}
@@ -1198,7 +1200,7 @@ export default function App() {
       )}
 
       {/* Testimonials Section */}
-      <section id="testimonials" className="py-32 px-6 bg-zinc-900/30 relative overflow-x-hidden">
+      <section id="testimonials" className="py-16 sm:py-24 md:py-32 px-4 sm:px-6 bg-zinc-900/30 relative overflow-x-hidden">
         {/* Background Elements */}
         <div className="absolute top-10 left-10 w-72 h-72 bg-emerald-500/5 rounded-full blur-3xl"></div>
         <div className="absolute bottom-10 right-10 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl"></div>

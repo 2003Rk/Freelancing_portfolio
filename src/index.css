@@ -30,6 +30,36 @@ html, body {
   touch-action: auto;
 }
 
+/* Mobile-specific optimizations */
+@media (max-width: 768px) {
+  /* Improve touch targets */
+  button, a[role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+    touch-action: manipulation;
+  }
+  
+  /* Optimize text sizes for mobile */
+  h1 {
+    line-height: 1.1;
+  }
+  
+  h2 {
+    line-height: 1.2;
+  }
+  
+  /* Prevent horizontal scroll */
+  body {
+    overflow-x: hidden;
+  }
+  
+  /* Improve modal positioning */
+  .modal-container {
+    margin-top: 0.5rem;
+    max-width: calc(100vw - 1rem);
+  }
+}
+
 /* Fix for modals and overlays */
 .modal-overlay {
   touch-action: none;
