@@ -199,6 +199,15 @@ export default function App() {
     return () => document.removeEventListener('click', handleAnchorClick);
   }, []);
 
+  // Manage body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      // Don't prevent body scrolling on mobile when menu is open
+      // This allows users to still scroll the page
+      return;
+    }
+  }, [mobileMenuOpen]);
+
   // Smooth mouse gradient animation
   useEffect(() => {
     let targetX = 50, targetY = 50, currentX = 50, currentY = 50;
@@ -439,7 +448,7 @@ export default function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100" style={{ touchAction: 'pan-y' }}>
+    <div className="min-h-screen bg-zinc-950 text-zinc-100">
 
       {/* Header */}
       <header className={`fixed top-0 w-full z-40 transition-all duration-500 ${scrolled ? 'bg-zinc-950/90 backdrop-blur-xl border-b border-zinc-800/50' : 'bg-transparent'}`}>
@@ -484,7 +493,7 @@ export default function App() {
       </header>
 
       {/* Hero Section */}
-      <section className="min-h-screen flex items-center justify-center px-4 sm:px-6 relative overflow-hidden bg-black">
+      <section className="min-h-screen flex items-center justify-center px-4 sm:px-6 relative overflow-x-hidden bg-black">
         {/* Smoke Cursor Effect */}
         <SmokeEffectWrapper />
 
@@ -566,7 +575,7 @@ export default function App() {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 relative overflow-hidden">
+      <section id="about" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 relative overflow-x-hidden">
         <div className="container mx-auto max-w-5xl relative z-10">
           <div className="grid md:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
             <div>
@@ -597,7 +606,7 @@ export default function App() {
       </section>
 
       {/* Projects Section */}
-      <section id="projects" className="py-32 px-6 bg-zinc-900/30 relative overflow-hidden">
+      <section id="projects" className="py-32 px-6 bg-zinc-900/30 relative overflow-x-hidden">
         {/* Decorative Elements */}
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl"></div>
@@ -775,7 +784,7 @@ export default function App() {
      
       
       {/* Auto-Scrolling Client Proof Section */}
-      <section id="clients" className="py-32 px-6 overflow-hidden">
+      <section id="clients" className="py-32 px-6 overflow-x-hidden">
         <div className="container mx-auto mb-16">
           <div className="text-center mb-12">
             <div className="text-sm text-emerald-400 mb-4 tracking-wider uppercase">Client Proof</div>
@@ -1189,7 +1198,7 @@ export default function App() {
       )}
 
       {/* Testimonials Section */}
-      <section id="testimonials" className="py-32 px-6 bg-zinc-900/30 relative overflow-hidden">
+      <section id="testimonials" className="py-32 px-6 bg-zinc-900/30 relative overflow-x-hidden">
         {/* Background Elements */}
         <div className="absolute top-10 left-10 w-72 h-72 bg-emerald-500/5 rounded-full blur-3xl"></div>
         <div className="absolute bottom-10 right-10 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl"></div>

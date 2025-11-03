@@ -7,23 +7,40 @@
   -webkit-overflow-scrolling: touch;
 }
 
+/* Global scroll behavior */
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
 /* Ensure all sections allow proper scrolling */
 section {
-  touch-action: pan-y;
+  touch-action: auto;
 }
 
 /* Fix for modals and overlays */
 .modal-overlay {
   touch-action: none;
+  position: fixed;
+  overflow: hidden;
 }
 
 .modal-content {
   touch-action: auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Prevent scroll blocking on interactive elements */
-button, a, input, textarea {
+button, a, input, textarea, select {
   touch-action: manipulation;
+}
+
+/* Fix for mobile Safari and other mobile browsers */
+@supports (-webkit-touch-callout: none) {
+  body {
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 /* Faster smooth scrolling - removed to use JavaScript instead */
@@ -36,18 +53,21 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* Enable proper touch scrolling on mobile */
-  touch-action: manipulation;
-  /* Prevent overscroll bounce effect that can interfere with scrolling */
-  overscroll-behavior: none;
+  touch-action: auto;
+  /* Prevent horizontal overflow but allow vertical scrolling */
+  overflow-x: hidden;
+  overflow-y: auto;
   /* Fix iOS Safari scrolling issues */
   position: relative;
   min-height: 100vh;
   min-height: -webkit-fill-available;
+  /* Ensure smooth scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Ensure html element also supports proper scrolling */
 html {
-  touch-action: manipulation;
+  touch-action: auto;
   -webkit-overflow-scrolling: touch;
   /* Fix iOS Safari viewport height issues */
   height: -webkit-fill-available;
@@ -455,5 +475,49 @@ section:first-of-type {
   to {
     opacity: 0;
     transform: translateY(-20px) scale(0.95);
+  }
+}
+
+/* Additional Mobile Scrolling Fixes */
+@media (max-width: 768px) {
+  /* Force enable scrolling on mobile devices */
+  body {
+    overflow: visible !important;
+    position: static !important;
+    height: auto !important;
+  }
+  
+  html {
+    overflow: visible !important;
+    position: static !important;
+    height: auto !important;
+  }
+  
+  /* Fix for sections with overflow hidden */
+  section {
+    overflow: visible !important;
+  }
+  
+  /* Ensure main container allows scrolling */
+  .min-h-screen {
+    min-height: 100vh !important;
+    height: auto !important;
+  }
+  
+  /* Fix touch scrolling for iOS devices */
+  * {
+    -webkit-overflow-scrolling: touch !important;
+  }
+}
+
+/* iOS Safari specific fixes */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari */
+  body {
+    position: relative;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
   }
 }
