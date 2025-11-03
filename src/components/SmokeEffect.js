@@ -918,19 +918,22 @@ export default function SmokeEffect() {
 
       window.addEventListener('mousemove', handleMouseMove);
 
-      // Touch events - Listen on window
+      // Touch events - Listen on window with passive handling to not interfere with scrolling
       const handleTouchMove = (e) => {
-        e.preventDefault();
+        // Only process touch for smoke effect, don't prevent scrolling
         const touches = e.targetTouches;
-        let pointer = pointers[0];
-        for (let i = 0; i < touches.length; i++) {
-          let posX = scaleByPixelRatio(touches[i].clientX);
-          let posY = scaleByPixelRatio(touches[i].clientY);
-          updatePointerMoveData(pointer, posX, posY, pointer.color);
+        if (touches && touches.length > 0) {
+          let pointer = pointers[0];
+          for (let i = 0; i < touches.length; i++) {
+            let posX = scaleByPixelRatio(touches[i].clientX);
+            let posY = scaleByPixelRatio(touches[i].clientY);
+            updatePointerMoveData(pointer, posX, posY, pointer.color);
+          }
         }
       };
 
-      window.addEventListener('touchmove', handleTouchMove, { passive: false });
+      // Use passive: true to allow normal scrolling behavior
+      window.addEventListener('touchmove', handleTouchMove, { passive: true });
 
       function updatePointerMoveData(pointer, posX, posY, color) {
         pointer.prevTexcoordX = pointer.texcoordX;
@@ -1062,6 +1065,7 @@ export default function SmokeEffect() {
         width: '100%',
         height: '100%',
         pointerEvents: 'none',
+        touchAction: 'auto',
         zIndex: 1,
       }}
     />

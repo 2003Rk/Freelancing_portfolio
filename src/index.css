@@ -18,6 +18,18 @@ section {
   touch-action: auto;
 }
 
+/* Specifically ensure body and html allow scrolling */
+html, body {
+  touch-action: pan-y;
+  overscroll-behavior: auto;
+}
+
+/* Ensure smoke effect doesn't block scrolling */
+#fluid, .smoke-effect-container {
+  pointer-events: none;
+  touch-action: auto;
+}
+
 /* Fix for modals and overlays */
 .modal-overlay {
   touch-action: none;
