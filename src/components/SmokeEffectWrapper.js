@@ -1,88 +1,46 @@
 import React, { useState, useEffect, useRef } from 'react';
 import SmokeEffectFallback from './SmokeEffectFallback';
 
-const LazySmokeEffect = React.lazy(() => import('./SmokeEffect'));
+// Import directly for faster loading instead of lazy loading
+import SmokeEffect from './SmokeEffect';
+
+const LazySmokeEffect = SmokeEffect;
 
 const SmokeEffectWrapper = () => {
   const [shouldLoad, setShouldLoad] = useState(false);
   const containerRef = useRef(null);
 
   useEffect(() => {
-    // Only load smoke effect if user has decent hardware and prefers motion
+    // Preload immediately on component mount for faster loading
     const shouldLoadEffect = () => {
-      // Check for reduced motion preference
+      // Only check for the most critical conditions
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         return false;
       }
 
-      // Check for low-end devices
-      if (navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4) {
+      // Only disable on very old or very slow devices
+      if (navigator.hardwareConcurrency && navigator.hardwareConcurrency < 2) {
         return false;
       }
 
-      // Check for mobile devices - disabled by default for performance
-      if (window.innerWidth <= 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-        return false;
-      }
-
-      // Check for slow connections
-      if (navigator.connection && (navigator.connection.effectiveType === 'slow-2g' || navigator.connection.effectiveType === '2g')) {
-        return false;
-      }
-
-      // Check for low memory devices
-      if (navigator.deviceMemory && navigator.deviceMemory < 4) {
-        return false;
-      }
-
-      // Check if page is loaded from cache (faster loading)
-      if (performance.getEntriesByType && performance.getEntriesByType('navigation')[0]?.transferSize === 0) {
-        return true; // Cached page, safe to load effects
-      }
-
-      // Check current performance
-      if (performance.now && performance.now() > 3000) {
-        return false; // Page took too long to load, skip heavy effects
-      }
-
+      // Allow on mobile but with reduced settings (handled in SmokeEffect.js)
       return true;
     };
 
-    if (shouldLoadEffect()) {
-      // Delay loading to improve initial page load performance
-      const loadTimeout = setTimeout(() => {
-        const observer = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                setShouldLoad(true);
-                observer.disconnect();
-              }
-            });
-          },
-          { threshold: 0.1 }
-        );
+    // Load immediately without any delays for better reliability
+    const timer = setTimeout(() => {
+      if (shouldLoadEffect()) {
+        setShouldLoad(true);
+      }
+    }, 0); // Immediate execution
 
-        if (containerRef.current) {
-          observer.observe(containerRef.current);
-        }
-
-        return () => observer.disconnect();
-      }, 1000); // Delay by 1 second to let other critical resources load first
-
-      return () => clearTimeout(loadTimeout);
-    }
+    return () => clearTimeout(timer);
   }, []);
 
   return (
     <div ref={containerRef} className="fixed inset-0 pointer-events-none z-0">
-      {shouldLoad ? (
-        <React.Suspense fallback={<SmokeEffectFallback />}>
-          <LazySmokeEffect />
-        </React.Suspense>
-      ) : (
-        <SmokeEffectFallback />
-      )}
+      <SmokeEffectFallback />
+      {shouldLoad && <LazySmokeEffect />}
     </div>
   );
 };

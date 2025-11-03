@@ -304,3 +304,156 @@ section:first-of-type {
     padding: 2rem !important;
   }
 }
+
+/* Smooth Modal Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes modalExit {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95) translateY(-20px);
+  }
+}
+
+/* Smooth scrolling for modal content */
+.modal-smooth-scroll {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(34, 197, 94, 0.3) rgba(39, 39, 42, 0.1);
+}
+
+/* Custom scrollbar for modal */
+.modal-smooth-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-smooth-scroll::-webkit-scrollbar-track {
+  background: rgba(39, 39, 42, 0.1);
+  border-radius: 3px;
+}
+
+.modal-smooth-scroll::-webkit-scrollbar-thumb {
+  background: rgba(34, 197, 94, 0.3);
+  border-radius: 3px;
+}
+
+.modal-smooth-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(34, 197, 94, 0.5);
+}
+
+/* Smooth project card animations */
+.project-card-enter {
+  animation: slideInUp 0.3s ease-out forwards;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile Modal Responsiveness */
+@media (max-width: 768px) {
+  .modal-smooth-scroll {
+    max-height: 85vh !important;
+    margin: 1rem !important;
+  }
+  
+  /* Ensure modal close buttons are easily tappable */
+  .modal-close-button {
+    min-width: 48px !important;
+    min-height: 48px !important;
+    touch-action: manipulation;
+  }
+  
+  /* Prevent modal content from being too close to edges */
+  .modal-content-mobile {
+    padding: 1rem !important;
+    margin: 0.5rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Extra small screens */
+  .modal-smooth-scroll {
+    max-height: 90vh !important;
+    margin: 0.5rem !important;
+  }
+}
+
+/* Modal Performance Optimizations */
+.modal-container {
+  /* Enable GPU acceleration for smoother animations */
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  /* Reduce repaints during animation */
+  backface-visibility: hidden;
+  /* Optimize rendering performance */
+  contain: layout style paint;
+}
+
+.modal-backdrop {
+  /* Optimize backdrop rendering */
+  transform: translateZ(0);
+  /* Reduce blur re-calculations */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Smooth modal transitions */
+.modal-enter {
+  animation: modalFadeIn 0.2s ease-out forwards;
+}
+
+.modal-exit {
+  animation: modalFadeOut 0.2s ease-in forwards;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes modalFadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+}

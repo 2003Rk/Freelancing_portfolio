@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="icon" href="%PUBLIC_URL%/IMG_8706.PNG" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta
@@ -21,7 +21,50 @@
     <!-- Resource hints -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="format-detection" content="telephone=no">
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/IMG_8706.PNG" />
+    
+    <!-- Script to create circular favicon -->
+    <script>
+      function createCircularFavicon() {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const size = 32;
+        canvas.width = size;
+        canvas.height = size;
+        
+        // Load the original image
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = function() {
+          // Create circular clipping path
+          ctx.beginPath();
+          ctx.arc(size/2, size/2, size/2, 0, Math.PI * 2);
+          ctx.clip();
+          
+          // Draw the image to fill the circle
+          ctx.drawImage(img, 0, 0, size, size);
+          
+          // Convert to data URL
+          const dataURL = canvas.toDataURL('image/png');
+          
+          // Update favicon
+          const favicon = document.querySelector('link[rel="icon"]');
+          if (favicon) {
+            favicon.href = dataURL;
+          }
+          
+          // Update apple-touch-icon
+          const appleIcon = document.querySelector('link[rel="apple-touch-icon"]');
+          if (appleIcon) {
+            appleIcon.href = dataURL;
+          }
+        };
+        img.src = '/IMG_8706.PNG';
+      }
+      
+      // Run when DOM is loaded
+      document.addEventListener('DOMContentLoaded', createCircularFavicon);
+    </script>
     <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
@@ -36,7 +79,7 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>React App</title>
+    <title>Nevix Dev</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Github, Linkedin, Mail, Star, MapPin, Code, Briefcase, Users, ArrowUpRight, ChevronDown, Terminal, Sparkles, ChevronRight, ChevronLeft, X } from 'lucide-react';
+import { Github, Linkedin, Mail, Star, Code, Briefcase, Users, ArrowUpRight, ChevronDown, Terminal, Sparkles, ChevronRight, ChevronLeft, X, ExternalLink } from 'lucide-react';
 import { fetchClientsData, fetchReviewsData } from './services/firebaseService';
 import SmokeEffectWrapper from './components/SmokeEffectWrapper';
 import OptimizedImage from './components/OptimizedImage';
@@ -93,6 +93,18 @@ export default function App() {
       }
     }
   };
+
+  // Optimized modal handlers to prevent lag
+  const handleCategorySelect = useCallback((category) => {
+    // Use requestAnimationFrame for smooth modal opening
+    requestAnimationFrame(() => {
+      setSelectedCategory(category);
+    });
+  }, []);
+
+  const handleModalClose = useCallback(() => {
+    setSelectedCategory(null);
+  }, []);
 
   // Keyboard navigation
   useEffect(() => {
@@ -278,6 +290,46 @@ export default function App() {
     loadReviewsData();
   }, []);
 
+  // Auto-scroll functionality for testimonials (similar to clients section)
+  useEffect(() => {
+    let testimonialInterval;
+    
+    if (isTestimonialAutoPlaying && reviewsData.length > 3) {
+      testimonialInterval = setInterval(() => {
+        setTestimonialScrollIndex((prevIndex) => {
+          const maxIndex = Math.max(0, reviewsData.length - 3);
+          return prevIndex >= maxIndex ? 0 : prevIndex + 1;
+        });
+      }, 4000); // Auto-scroll every 4 seconds
+    }
+
+    return () => {
+      if (testimonialInterval) {
+        clearInterval(testimonialInterval);
+      }
+    };
+  }, [isTestimonialAutoPlaying, reviewsData.length]);
+
+  // Auto-scroll functionality for client proof section  
+  useEffect(() => {
+    let clientInterval;
+    
+    if (isClientAutoPlaying && clientsData.length > 3) {
+      clientInterval = setInterval(() => {
+        setClientScrollIndex((prevIndex) => {
+          const maxIndex = Math.max(0, clientsData.length - 3);
+          return prevIndex >= maxIndex ? 0 : prevIndex + 1;
+        });
+      }, 5000); // Auto-scroll every 5 seconds (slightly slower than testimonials)
+    }
+
+    return () => {
+      if (clientInterval) {
+        clearInterval(clientInterval);
+      }
+    };
+  }, [isClientAutoPlaying, clientsData.length]);
+
   const projectCategories = [
     {
       name: "Mobile App Development",
@@ -287,93 +339,47 @@ export default function App() {
       bgGradient: "from-purple-900/20 to-pink-900/20",
       accentColor: "purple-400",
       description: "Native & cross-platform mobile applications with stunning UI/UX",
-      totalProjects: 15,
       technologies: ["React Native", "Flutter", "iOS", "Android"],
       projects: [
         {
-          title: "FitTrack Pro",
-          description: "AI-powered fitness tracking app with personalized workout plans and nutrition tracking",
-          tech: ["React Native", "Firebase", "TensorFlow Lite"],
-          features: ["Real-time tracking", "AI recommendations", "Social sharing"],
-          status: "Live",
-          users: "50K+",
-          duration: "4 months"
+          title: "Fibuddy",
+          description: "FitBuddy — your all-in-one AI-powered fitness companion for workouts, meals, and progress tracking.",
+          tech: ["Flutter", "Firebase", "Python" , "Django"],
+          features: ["All Body Workouts", "Meal Planner", "Stretching Routines"],
+          duration: "4 months",
+          github: "https://github.com/2003Rk/FitBuddy-Ftiness-App"
         },
         {
-          title: "TravelMate",
-          description: "Travel planning companion with itinerary management and local recommendations",
-          tech: ["Flutter", "Node.js", "MongoDB"],
-          features: ["Offline maps", "Trip sharing", "Budget tracking"],
-          status: "Live",
-          users: "30K+",
-          duration: "3 months"
+          title: "Resume2Job",
+          description: "Resume-Based Job Finder is an AI-powered app that analyzes resumes using NLP and ML to score ATS compatibility and recommend matching jobs from multiple platforms.",
+          tech: ["Flutter", "Firebase", "Django" , "Python"],
+          features: ["Resume AI analysis", "Job recommendations", "NLP parsing"],
+          duration: "3 months",
+          github: "https://github.com/2003Rk/Resume2Job"
         },
         {
-          title: "MindfulMoments",
-          description: "Meditation and mindfulness app with guided sessions and progress tracking",
-          tech: ["React Native", "Redux", "AWS"],
-          features: ["Daily reminders", "Progress analytics", "Custom sessions"],
-          status: "Live",
-          users: "20K+",
-          duration: "2 months"
+          title: "Pucket Crypto App",
+          description: "CryptoApp is designed for both beginners and experienced traders, combining wallet management, real-time market data, secure transactions, and AI-assisted guidance to deliver a seamless crypto experience.",
+          tech: ["Flutter", "Riverpod", "Firebase" ],
+          features: ["Secure wallet", "Progress analytics", "Real time stock tracking"],
+          duration: "2 months",
+          github: "https://github.com/2003Rk/Pucket-Crypto-app"
         },
         {
-          title: "FoodHub Delivery",
-          description: "Food delivery platform connecting restaurants with customers in real-time",
-          tech: ["React Native", "Socket.io", "PostgreSQL"],
-          features: ["Live tracking", "Payment gateway", "Push notifications"],
-          status: "Live",
-          users: "45K+",
-          duration: "5 months"
-        }
-      ]
-    },
-    {
-      name: "Crypto & Blockchain",
-      icon: "₿",
-      gradient: "from-amber-500/20 to-orange-500/20",
-      borderGradient: "from-amber-500 to-orange-500",
-      bgGradient: "from-amber-900/20 to-orange-900/20",
-      accentColor: "amber-400",
-      description: "Decentralized applications and blockchain solutions",
-      totalProjects: 12,
-      technologies: ["Web3", "Solidity", "Ethereum", "Smart Contracts"],
-      projects: [
-        {
-          title: "CryptoVault",
-          description: "Secure multi-chain cryptocurrency wallet with DeFi integration and portfolio tracking",
-          tech: ["React", "Web3.js", "Solidity", "Ethers.js"],
-          features: ["Multi-chain support", "DeFi staking", "NFT gallery"],
-          status: "Live",
-          users: "40K+",
-          duration: "6 months"
+          title: "Japanese Music App",
+          description: "A modern web app built with React and Firebase for streaming and enjoying Japanese music with a sleek, responsive design",
+          tech: ["React Native", "Firebase"],
+          features: ["music search ", "Real time music", "Smooth Ui"],
+          duration: "1 months",
+          github: "https://github.com/2003Rk/japan_music_app"
         },
-        {
-          title: "NFT Marketplace",
-          description: "Decentralized marketplace for creating, buying, and selling digital assets",
-          tech: ["Next.js", "Hardhat", "IPFS", "Polygon"],
-          features: ["Gas optimization", "Lazy minting", "Royalty system"],
-          status: "Live",
-          users: "25K+",
-          duration: "4 months"
-        },
-        {
-          title: "DeFi Dashboard",
-          description: "All-in-one DeFi portfolio tracker with yield farming and liquidity pool analytics",
-          tech: ["React", "GraphQL", "The Graph", "Web3"],
-          features: ["Portfolio tracking", "Yield comparison", "Gas tracker"],
-          status: "Live",
-          users: "35K+",
-          duration: "3 months"
-        },
-        {
-          title: "TokenSwap Exchange",
-          description: "Decentralized exchange for seamless token swapping across multiple chains",
-          tech: ["Vue.js", "Solidity", "Uniswap", "Chainlink"],
-          features: ["Low fees", "Price aggregation", "Slippage protection"],
-          status: "Beta",
-          users: "18K+",
-          duration: "5 months"
+          {
+          title: "PawKit",
+          description: "A Pet Food Delivery app that brings your pet's favorite food and treats straight to your door!",
+          tech: ["React Native", "Firebase" , "FirebasePushnotifications"],
+          features: ["Real-time tracking", "Easy reordering", "Personalized recommendations"],
+          duration: "2 months",
+          github: "https://pawkit.co/"
         }
       ]
     },
@@ -385,44 +391,39 @@ export default function App() {
       bgGradient: "from-blue-900/20 to-cyan-900/20",
       accentColor: "blue-400",
       description: "Full-stack web applications with modern technologies",
-      totalProjects: 18,
       technologies: ["React", "Next.js", "Node.js", "GraphQL"],
       projects: [
         {
-          title: "ProjectHub",
-          description: "Collaborative project management platform with real-time updates and team analytics",
-          tech: ["Next.js", "PostgreSQL", "WebSocket", "Redis"],
-          features: ["Real-time collaboration", "Kanban boards", "Time tracking"],
-          status: "Live",
-          users: "100K+",
-          duration: "7 months"
+          title: "VeriFil — Crypto ",
+          description: "Analyze Ethereum wallets. Detect scams, honeypots, and risky tokens — all in one place. Built with Next.js + Tailwind frontend and a Python Flask backend.",
+          tech: ["Next.js", "React", "Tailwind CSS", "Framer Motion" , "Python Flask"],
+          features: ["Real-time analysis", "Risk assessment", "user-friendly UI"],
+          duration: "2 months",
+          github: "https://cryptowebsiite-yh1p.vercel.app/"
         },
         {
-          title: "CloudDrive Pro",
-          description: "Enterprise file storage solution with advanced sharing and encryption features",
-          tech: ["React", "Node.js", "AWS S3", "Docker"],
-          features: ["End-to-end encryption", "Version control", "Team workspaces"],
-          status: "Live",
-          users: "75K+",
-          duration: "6 months"
+          title: "Scam_detection",
+          description: "ScamShield is an AI-powered scam detection platform that uses machine learning, NLP, and computer vision to protect users from fraud in real time",
+          tech: ["HTML5", "Python", "CSS3", "JavaScript" , " Flask " , "librosa" , "speechrecognition" , "NumPy"],
+          features: ["Real-time monitoring", "Voice analysis", "Image Analysis" , "NLP detection"],
+          duration: "1 months",
+          github: "https://github.com/2003Rk/Scam_detection"
         },
         {
-          title: "DataViz Studio",
-          description: "Interactive data visualization platform for business intelligence and analytics",
-          tech: ["Vue.js", "D3.js", "Python", "FastAPI"],
-          features: ["Custom dashboards", "Real-time data", "Export reports"],
-          status: "Beta",
-          users: "15K+",
-          duration: "4 months"
+          title: "Estate Strapi Website",
+          description: "A real estate website built with Strapi and Next.js, featuring property listings, user authentication, and a responsive design.",
+          tech: ["Firebase Firestore", "Strapi CMS", "Tailwind CSS"],
+          features: ["Property listings", "User authentication", "Responsive design"],
+          duration: "3 months",
+          github: "https://github.com/2003Rk/STRAPI"
         },
         {
-          title: "EduLearn Platform",
-          description: "Online learning management system with live classes and interactive courses",
-          tech: ["Next.js", "MongoDB", "Zoom API", "Stripe"],
-          features: ["Live sessions", "Course builder", "Progress tracking"],
-          status: "Live",
-          users: "60K+",
-          duration: "8 months"
+          title: " Bittensor Transaction Tracker & Twitter Bot",
+          description: "A full-stack transaction monitoring system for Bittensor (TAO) that tracks transfers between Bittensor and Solana networks and automatically posts real-time updates to Twitter (X).",
+          tech: ["Flask", "Python", "Twitter API", "WebSocket", "Next.js"],
+          features: ["Real-time tracking", "Cross-chain support", "Automated Twitter updates"],
+          duration: "8 months",
+          github: "https://github.com/2003Rk/edulearn-platform"
         }
       ]
     }
@@ -431,10 +432,10 @@ export default function App() {
 
 
   const stats = [
-    { icon: <Briefcase className="w-6 h-6" />, value: "150+", label: "Projects" },
-    { icon: <Users className="w-6 h-6" />, value: "80+", label: "Clients" },
-    { icon: <Star className="w-6 h-6" />, value: "5.0", label: "Rating" },
-    { icon: <Code className="w-6 h-6" />, value: "6+", label: "Years" }
+    { icon: <Briefcase className="w-6 h-6" />, value: "10+", label: "Projects" },
+    { icon: <Users className="w-6 h-6" />, value: "10+", label: "Clients" },
+    { icon: <Star className="w-6 h-6" />, value: "4.7", label: "Rating" },
+    { icon: <Code className="w-6 h-6" />, value: "4+", label: "Years" }
   ];
 
   return (
@@ -566,9 +567,6 @@ export default function App() {
 
       {/* About Section */}
       <section id="about" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 relative overflow-hidden">
-        {/* Smoke Effect Background */}
-        <SmokeEffectWrapper />
-        
         <div className="container mx-auto max-w-5xl relative z-10">
           <div className="grid md:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
             <div>
@@ -615,12 +613,12 @@ export default function App() {
           </div>
           
           {/* Category Cards */}
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto justify-items-center">
             {projectCategories.map((category, index) => (
               <button
                 key={index}
-                onClick={() => setSelectedCategory(category)}
-                className="group relative p-8 rounded-3xl border border-zinc-800 bg-zinc-950/50 hover:border-emerald-500/50 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-500/10 text-left"
+                onClick={() => handleCategorySelect(category)}
+                className="group relative p-8 rounded-3xl border border-zinc-800 bg-zinc-950/50 hover:border-emerald-500/50 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-500/10 text-left"
               >
                 {/* Background Gradient */}
                 <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${category.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-2xl`}></div>
@@ -672,20 +670,20 @@ export default function App() {
 
       {/* Project Modal */}
       {selectedCategory && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={() => setSelectedCategory(null)}>
-          <div className="relative w-full max-w-6xl max-h-[90vh] overflow-y-auto bg-zinc-950 rounded-3xl border border-zinc-800 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 modal-backdrop" onClick={handleModalClose}>
+          <div className="relative w-full max-w-6xl max-h-[90vh] overflow-y-auto bg-zinc-950 rounded-3xl border border-zinc-800 shadow-2xl modal-container modal-enter" onClick={(e) => e.stopPropagation()}>
             {/* Header */}
-            <div className={`sticky top-0 z-10 p-8 border-b border-zinc-800 bg-gradient-to-r ${selectedCategory.bgGradient} backdrop-blur-xl`}>
+            <div className={`sticky top-0 z-10 p-8 border-b border-zinc-800 bg-gradient-to-r ${selectedCategory.bgGradient}`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="text-5xl">{selectedCategory.icon}</div>
                   <div>
                     <h3 className="text-3xl font-light text-zinc-100">{selectedCategory.name}</h3>
-                    <p className="text-zinc-400 text-sm mt-1">{selectedCategory.totalProjects} completed projects</p>
+                    <p className="text-zinc-400 text-sm mt-1">{selectedCategory.projects.length} completed projects</p>
                   </div>
                 </div>
                 <button
-                  onClick={() => setSelectedCategory(null)}
+                  onClick={handleModalClose}
                   className="w-10 h-10 rounded-full border border-zinc-700 hover:border-emerald-500 hover:bg-emerald-500/10 transition-all duration-300 flex items-center justify-center"
                 >
                   <X className="w-5 h-5 text-zinc-400 hover:text-emerald-400" />
@@ -706,9 +704,7 @@ export default function App() {
                         <h4 className="text-2xl font-light text-zinc-100 group-hover:text-emerald-400 transition-colors duration-300">
                           {project.title}
                         </h4>
-                        <span className={`px-3 py-1 text-xs rounded-full bg-gradient-to-r ${selectedCategory.borderGradient} text-white font-medium`}>
-                          {project.status}
-                        </span>
+                       
                       </div>
                       <p className="text-zinc-400 leading-relaxed mb-4">
                         {project.description}
@@ -746,10 +742,7 @@ export default function App() {
                     <div>
                       <div className="text-xs text-zinc-500 uppercase tracking-wider mb-3">Project Stats</div>
                       <div className="space-y-3">
-                        <div className="flex items-center gap-2">
-                          <Users className="w-4 h-4 text-emerald-400" />
-                          <span className="text-sm text-zinc-300">{project.users} users</span>
-                        </div>
+                        
                         <div className="flex items-center gap-2">
                           <Terminal className="w-4 h-4 text-emerald-400" />
                           <span className="text-sm text-zinc-300">{project.duration}</span>
@@ -758,11 +751,20 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* View Project Button */}
-                  <button className={`w-full py-3 rounded-xl border border-zinc-800 text-sm font-medium text-zinc-300 hover:bg-gradient-to-r ${selectedCategory.borderGradient} hover:text-white hover:border-transparent transition-all duration-300 flex items-center justify-center gap-2 group/btn`}>
-                    View Project Details
-                    <ArrowUpRight className="w-4 h-4 group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform duration-300" />
-                  </button>
+                  {/* Project Action Buttons */}
+                  <div className="space-y-3">
+                    <a 
+                      href={project.github} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className={`w-full py-3 rounded-xl border border-zinc-800 text-sm font-medium text-zinc-300 hover:bg-gradient-to-r ${selectedCategory.borderGradient} hover:text-white hover:border-transparent transition-all duration-300 flex items-center justify-center gap-2 group/btn`}
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      Project Details
+                      <ArrowUpRight className="w-4 h-4 group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform duration-300" />
+                    </a>
+                   
+                  </div>
                 </div>
               ))}
             </div>
@@ -1040,9 +1042,9 @@ export default function App() {
             {/* Close button */}
             <button
               onClick={() => setSelectedProofCard(null)}
-              className="absolute -top-3 -right-3 z-10 w-8 h-8 rounded-full bg-zinc-900 border-2 border-zinc-700 hover:border-emerald-500 hover:bg-emerald-500/10 transition-all duration-300 flex items-center justify-center group"
+              className="absolute top-2 right-2 z-20 w-10 h-10 rounded-full bg-zinc-900/90 border-2 border-zinc-700 hover:border-emerald-500 hover:bg-emerald-500/10 transition-all duration-300 flex items-center justify-center group backdrop-blur-sm shadow-lg"
             >
-              <X className="w-4 h-4 text-zinc-400 group-hover:text-emerald-400 transition-colors duration-300" />
+              <X className="w-5 h-5 text-zinc-400 group-hover:text-emerald-400 transition-colors duration-300" />
             </button>
 
             {/* 3D Card */}
@@ -1195,14 +1197,14 @@ export default function App() {
         <div className="container mx-auto relative z-10">
           <div className="text-center mb-20">
             <div className="text-sm text-emerald-400 mb-4 tracking-wider uppercase flex items-center justify-center gap-2">
-            
-        
+              <Star className="w-4 h-4" />
+              Client Testimonials
             </div>
             <h2 className="text-5xl md:text-6xl font-light mb-6">What Clients Say</h2>
             <p className="text-zinc-400 max-w-2xl mx-auto mb-2">
               Real feedback from satisfied clients across the globe. Each review represents a successful project and lasting partnership.
             </p>
-            <p className="text-xs text-zinc-600">💡 Use Shift + arrow keys, navigation buttons, or swipe to browse testimonials</p>
+            <p className="text-xs text-zinc-600">💡 Use arrow keys or click the navigation buttons to browse manually</p>
             
             {/* Stats Bar */}
             <div className="flex items-center justify-center gap-8 mt-12 p-6 bg-zinc-800/30 border border-zinc-800 rounded-2xl backdrop-blur-sm max-w-2xl mx-auto">
@@ -1236,8 +1238,8 @@ export default function App() {
           {/* Animated Testimonials Scrolling Container */}
           <div className="relative overflow-hidden mb-12">
             {/* Gradient Overlays */}
-            <div className="absolute left-0 top-0 w-20 h-full bg-gradient-to-r from-zinc-950 via-zinc-950/80 to-transparent z-10 pointer-events-none"></div>
-            <div className="absolute right-0 top-0 w-20 h-full bg-gradient-to-l from-zinc-950 via-zinc-950/80 to-transparent z-10 pointer-events-none"></div>
+            <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-zinc-950 to-transparent z-10 pointer-events-none"></div>
+            <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-zinc-950 to-transparent z-10 pointer-events-none"></div>
             
             {/* Manual Navigation Buttons */}
             {!loadingReviews && reviewsData.length > 3 && (
@@ -1293,8 +1295,7 @@ export default function App() {
                 ref={testimonialScrollRef}
                 className={`flex gap-6 transition-transform duration-500 ${isTestimonialAutoPlaying ? 'animate-scroll-testimonials' : ''}`}
                 style={{
-                  width: `${reviewsData.length * 400 * 2}px`,
-                  transform: `translateX(-${testimonialScrollIndex * (400 + 24)}px)`, // 400px card width + 24px gap
+                  transform: `translateX(-${testimonialScrollIndex * (320 + 24)}px)`, // 320px card width + 24px gap (same as client proof)
                   animationPlayState: isTestimonialAutoPlaying ? 'running' : 'paused'
                 }}
                 onMouseEnter={() => setIsTestimonialAutoPlaying(false)}
@@ -1305,119 +1306,87 @@ export default function App() {
               >
                 {/* First Set - Real Firebase Data */}
                 {reviewsData.map((review, i) => (
-                  <div key={`first-${review.id || i}`} className="group relative p-6 border border-zinc-800 rounded-2xl hover:border-emerald-500/50 hover:bg-zinc-900/50 transition-all duration-500 hover:-translate-y-2 hover:shadow-xl hover:shadow-emerald-500/10 flex-shrink-0 w-96 h-80">
-                    {/* Project Category Badge */}
-                    <div className="absolute top-4 right-4 px-2 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-xs text-emerald-400 capitalize">
-                      {review.projectType || 'Project'}
-                    </div>
-                    
-                    {/* Rating Stars */}
-                    <div className="flex gap-1 mb-4">
-                      {[...Array(review.rating || 5)].map((_, starIndex) => (
-                        <Star key={starIndex} className="w-4 h-4 fill-emerald-400 text-emerald-400" />
-                      ))}
-                    </div>
-                    
-                    {/* Review Text */}
-                    <p className="text-zinc-300 mb-4 leading-relaxed text-sm line-clamp-3 overflow-hidden">
-                      {review.review || 'Great experience working together!'}
-                    </p>
-                    
-                    {/* Client Info */}
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400/20 to-teal-500/20 border border-emerald-500/30 flex items-center justify-center text-xs font-bold text-emerald-400 group-hover:border-emerald-500/50 transition-colors duration-300 uppercase">
+                  <div key={`first-${review.id || i}`} className="flex-shrink-0 w-80 h-96 bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-emerald-500/50 transition-all duration-300 group cursor-pointer hover:scale-105 transform">
+                    <div className="flex flex-col h-full">
+                      {/* Header with client info */}
+                      <div className="flex items-center gap-3 mb-4 pb-4 border-b border-zinc-800">
+                        <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-medium uppercase">
                           {review.clientName?.substring(0, 2) || 'CL'}
                         </div>
-                        <div>
-                          <div className="font-medium text-zinc-100 text-sm capitalize">{review.clientName || 'Anonymous'}</div>
-                          <div className="text-xs text-zinc-500">Client</div>
-                          <div className="text-xs text-zinc-600">{review.country || 'Global'}</div>
+                        <div className="flex-1">
+                          <div className="text-sm font-medium text-zinc-300">{review.clientName || 'Anonymous'}</div>
+                          <div className="text-xs text-zinc-500 capitalize">{review.projectType || 'Project'}</div>
                         </div>
+                        <div className="flex gap-1">
+                          {[...Array(review.rating || 5)].map((_, starIndex) => (
+                            <Star key={starIndex} className="w-3 h-3 fill-emerald-400 text-emerald-400" />
+                          ))}
+                        </div>
+                      </div>
+                    
+                      {/* Review content area */}
+                      <div className="flex-1 relative rounded-xl overflow-hidden mb-4 border border-zinc-800 group-hover:border-emerald-500/30 transition-colors duration-300 p-4 bg-zinc-800/50">
+                        <p className="text-zinc-300 leading-relaxed text-sm">
+                          "{review.review || 'Great experience working together! Professional, reliable, and delivered exactly what we needed.'}"
+                        </p>
+                      </div>
+
+                      {/* Payment info footer */}
+                      <div className="flex items-center justify-between px-4 py-3 bg-zinc-800/50 rounded-lg border border-zinc-800 hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all duration-300">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-emerald-400 group-hover:animate-pulse"></div>
+                          <span className="text-xs text-zinc-400 group-hover:text-emerald-400 transition-colors capitalize">
+                            {review.projectType || 'Project'} 
+                          </span>
+                        </div>
+                        <span className="text-sm font-medium text-emerald-400 group-hover:scale-110 transition-transform">
+                          ${review.amount || '0'}
+                        </span>
                       </div>
                     </div>
-                    
-                    {/* Project & Payment Info */}
-                    <div className="pt-3 border-t border-zinc-800 group-hover:border-emerald-500/30 transition-colors duration-300">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Project</div>
-                          <div className="text-sm font-medium text-zinc-300 truncate max-w-32">{review.projectName || 'N/A'}</div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Value</div>
-                          <div className="text-sm font-bold text-emerald-400">${review.amount || '0'}</div>
-                        </div>
-                      </div>
-                      
-                      {/* Country */}
-                      <div className="flex items-center gap-1 mt-2 text-xs text-zinc-600">
-                        <MapPin className="w-3 h-3" />
-                        {review.country || 'Global'}
-                      </div>
-                    </div>
-                    
-                    {/* Hover Effect Gradient */}
-                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-500/5 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"></div>
                   </div>
                 ))}
                 
                 {/* Second Set (for seamless loop) */}
                 {reviewsData.map((review, i) => (
-                  <div key={`second-${review.id || i}`} className="group relative p-6 border border-zinc-800 rounded-2xl hover:border-emerald-500/50 hover:bg-zinc-900/50 transition-all duration-500 hover:-translate-y-2 hover:shadow-xl hover:shadow-emerald-500/10 flex-shrink-0 w-96 h-80">
-                    {/* Project Category Badge */}
-                    <div className="absolute top-4 right-4 px-2 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-xs text-emerald-400 capitalize">
-                      {review.projectType || 'Project'}
-                    </div>
-                    
-                    {/* Rating Stars */}
-                    <div className="flex gap-1 mb-4">
-                      {[...Array(review.rating || 5)].map((_, starIndex) => (
-                        <Star key={starIndex} className="w-4 h-4 fill-emerald-400 text-emerald-400" />
-                      ))}
-                    </div>
-                    
-                    {/* Review Text */}
-                    <p className="text-zinc-300 mb-4 leading-relaxed text-sm line-clamp-3 overflow-hidden">
-                      {review.review || 'Great experience working together!'}
-                    </p>
-                    
-                    {/* Client Info */}
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400/20 to-teal-500/20 border border-emerald-500/30 flex items-center justify-center text-xs font-bold text-emerald-400 group-hover:border-emerald-500/50 transition-colors duration-300 uppercase">
+                  <div key={`second-${review.id || i}`} className="flex-shrink-0 w-80 h-96 bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-emerald-500/50 transition-all duration-300 group cursor-pointer hover:scale-105 transform">
+                    <div className="flex flex-col h-full">
+                      {/* Header with client info */}
+                      <div className="flex items-center gap-3 mb-4 pb-4 border-b border-zinc-800">
+                        <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-medium uppercase">
                           {review.clientName?.substring(0, 2) || 'CL'}
                         </div>
-                        <div>
-                          <div className="font-medium text-zinc-100 text-sm capitalize">{review.clientName || 'Anonymous'}</div>
-                          <div className="text-xs text-zinc-500">Client</div>
-                          <div className="text-xs text-zinc-600">{review.country || 'Global'}</div>
+                        <div className="flex-1">
+                          <div className="text-sm font-medium text-zinc-300">{review.clientName || 'Anonymous'}</div>
+                          <div className="text-xs text-zinc-500 capitalize">{review.projectType || 'Project'}</div>
                         </div>
+                        <div className="flex gap-1">
+                          {[...Array(review.rating || 5)].map((_, starIndex) => (
+                            <Star key={starIndex} className="w-3 h-3 fill-emerald-400 text-emerald-400" />
+                          ))}
+                        </div>
+                      </div>
+                    
+                      {/* Review content area */}
+                      <div className="flex-1 relative rounded-xl overflow-hidden mb-4 border border-zinc-800 group-hover:border-emerald-500/30 transition-colors duration-300 p-4 bg-zinc-800/50">
+                        <p className="text-zinc-300 leading-relaxed text-sm">
+                          "{review.review || 'Great experience working together! Professional, reliable, and delivered exactly what we needed.'}"
+                        </p>
+                      </div>
+
+                      {/* Payment info footer */}
+                      <div className="flex items-center justify-between px-4 py-3 bg-zinc-800/50 rounded-lg border border-zinc-800 hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all duration-300">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-emerald-400 group-hover:animate-pulse"></div>
+                          <span className="text-xs text-zinc-400 group-hover:text-emerald-400 transition-colors capitalize">
+                            {review.projectType || 'Project'} 
+                          </span>
+                        </div>
+                        <span className="text-sm font-medium text-emerald-400 group-hover:scale-110 transition-transform">
+                          ${review.amount || '0'}
+                        </span>
                       </div>
                     </div>
-                    
-                    {/* Project & Payment Info */}
-                    <div className="pt-3 border-t border-zinc-800 group-hover:border-emerald-500/30 transition-colors duration-300">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Project</div>
-                          <div className="text-sm font-medium text-zinc-300 truncate max-w-32">{review.projectName || 'N/A'}</div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Value</div>
-                          <div className="text-sm font-bold text-emerald-400">${review.amount || '0'}</div>
-                        </div>
-                      </div>
-                      
-                      {/* Country */}
-                      <div className="flex items-center gap-1 mt-2 text-xs text-zinc-600">
-                        <MapPin className="w-3 h-3" />
-                        {review.country || 'Global'}
-                      </div>
-                    </div>
-                    
-                    {/* Hover Effect Gradient */}
-                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-500/5 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"></div>
                   </div>
                 ))}
               </div>

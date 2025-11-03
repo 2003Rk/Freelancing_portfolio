@@ -30,9 +30,10 @@ export default function SmokeEffect() {
       return;
     }
 
-    // Show a subtle loading state
+    // Show canvas immediately but transparent
     canvas.style.opacity = '0';
-    canvas.style.transition = 'opacity 1s ease-in-out';
+    canvas.style.transition = 'opacity 0.5s ease-in-out';
+    canvas.style.display = 'block';
 
     const resizeCanvas = () => {
       const scaleByPixelRatio = (input) => {
@@ -54,10 +55,17 @@ export default function SmokeEffect() {
     resizeCanvas();
     window.addEventListener('resize', debouncedResize);
 
-    // Initialize fluid simulation asynchronously
+    // Initialize fluid simulation with better error handling
     const initFluid = async () => {
-      // Use requestAnimationFrame to defer initialization
-      await new Promise(resolve => requestAnimationFrame(resolve));
+      try {
+        // Minimal delay to ensure DOM is ready
+        await new Promise(resolve => {
+          if (document.readyState === 'complete') {
+            resolve();
+          } else {
+            window.addEventListener('load', resolve, { once: true });
+          }
+        });
       // Detect device capabilities and optimize settings
       const isMobile = window.innerWidth <= 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       const isLowEnd = navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4;
@@ -70,23 +78,23 @@ export default function SmokeEffect() {
             SIM_RESOLUTION: 64,
             DYE_RESOLUTION: 256,
             CAPTURE_RESOLUTION: 128,
-            DENSITY_DISSIPATION: 5.0,
-            VELOCITY_DISSIPATION: 2.0,
+            DENSITY_DISSIPATION: 4.0, // Increased for lighter, more dissipating smoke
+            VELOCITY_DISSIPATION: 2.5, // Increased for gentler movement
             PRESSURE_ITERATIONS: 5,
-            CURL: 5,
-            SPLAT_FORCE: 3000,
+            CURL: 8, // Reduced for subtler swirls
+            SPLAT_FORCE: 2000, // Reduced for gentler effect
             SHADING: false
           };
         } else {
           return {
-            SIM_RESOLUTION: 96, // Reduced from 128 for faster startup
-            DYE_RESOLUTION: 512, // Reduced from 1024 for faster startup
-            CAPTURE_RESOLUTION: 256, // Reduced from 512 for faster startup
-            DENSITY_DISSIPATION: 3.5,
-            VELOCITY_DISSIPATION: 1.2,
-            PRESSURE_ITERATIONS: 15, // Reduced from 20 for faster startup
-            CURL: 15, // Reduced from 20 for faster startup
-            SPLAT_FORCE: 6000,
+            SIM_RESOLUTION: 96, // Moderate resolution
+            DYE_RESOLUTION: 512, // Moderate resolution
+            CAPTURE_RESOLUTION: 256, 
+            DENSITY_DISSIPATION: 3.0, // Increased for lighter smoke that dissipates more
+            VELOCITY_DISSIPATION: 1.8, // Increased for gentler movement
+            PRESSURE_ITERATIONS: 12, // Reduced 
+            CURL: 15, // Reduced for subtler swirls
+            SPLAT_FORCE: 4000, // Much reduced for gentler effect
             SHADING: true
           };
         }
@@ -97,8 +105,8 @@ export default function SmokeEffect() {
       let config = {
         ...qualitySettings,
         PRESSURE: 0.1,
-        SPLAT_RADIUS: 1.0,
-        COLOR_UPDATE_SPEED: 15,
+        SPLAT_RADIUS: 0.8, // Reduced for smaller, more subtle smoke areas
+        COLOR_UPDATE_SPEED: 10, // Reduced for gentler color transitions
         PAUSED: false,
         BACK_COLOR: { r: 0, g: 0, b: 0 },
         TRANSPARENT: true,
@@ -114,7 +122,7 @@ export default function SmokeEffect() {
         this.deltaY = 0;
         this.down = false;
         this.moved = false;
-        this.color = [30, 0, 300];
+        this.color = [40, 20, 180]; // Slightly increased for a bit more color visibility
       }
 
       let pointers = [];
@@ -948,10 +956,12 @@ export default function SmokeEffect() {
       }
 
       function generateColor() {
-        let c = HSVtoRGB(Math.random(), 1.0, 1.0);
-        c.r *= 0.45;
-        c.g *= 0.45;
-        c.b *= 0.45;
+        let c = HSVtoRGB(Math.random(), 0.7, 0.9); // Slightly increased saturation and brightness
+        // Moderately increased color intensity for a bit more visibility
+        c.r *= 0.4;
+        c.g *= 0.4;
+        c.b *= 0.4;
+        
         return c;
       }
 
@@ -1018,6 +1028,10 @@ export default function SmokeEffect() {
         window.removeEventListener('mousemove', handleMouseMove);
         window.removeEventListener('touchmove', handleTouchMove);
       };
+      } catch (error) {
+        console.error('SmokeEffect initialization failed:', error);
+        throw error;
+      }
     };
 
     // Initialize asynchronously to prevent blocking
