@@ -402,7 +402,7 @@ export default function App() {
       bgGradient: "from-blue-900/20 to-cyan-900/20",
       accentColor: "blue-400",
       description: "Full-stack web applications with modern technologies",
-      technologies: ["React", "Next.js", "Node.js", "GraphQL"],
+      technologies: ["React", "js" , "Next.js", "Node.js", "GraphQL" , "Python" ],
       projects: [
         {
           title: "VeriFil — Crypto ",
@@ -436,6 +436,48 @@ export default function App() {
           duration: "8 months",
           github: "https://github.com/2003Rk/edulearn-platform"
         }
+      ]
+    },
+    {
+      name: "Web Scraping",
+      icon: "🕷️",
+      gradient: "from-orange-500/20 to-red-500/20",
+      borderGradient: "from-orange-500 to-red-500",
+      bgGradient: "from-orange-900/20 to-red-900/20",
+      accentColor: "orange-400",
+      description: "Data extraction and automation solutions",
+      technologies: ["Python", "Selenium", "BeautifulSoup", "Scrapy", "Pandas"],
+      projects: [
+        {
+          title: "Lead Automation Tool",
+          description: "Lead Automation Tool is a Python-based lead generation and outreach automation project (in the style of tools such as Apollo.io). The repository includes scrapers, connectors to Google Sheets, enrichment and outreach modules, a small web app, and utilities to coordinate scheduled runs.",
+          tech: ["Python", "Selenium", "BeautifulSoup", "JavaScript", "HTML"],
+          features: ["Multiple scrapers (Yelp and Playwright-based scrapers)", "Google Sheets integration ", "A small web app "],
+          duration: "1 months",
+          github: "https://github.com/2003Rk/Lead_generation"
+        },
+       
+      ]
+    },
+    {
+      name: "Automation Tools",
+      icon: "🤖",
+      gradient: "from-green-500/20 to-teal-500/20",
+      borderGradient: "from-green-500 to-teal-500",
+      bgGradient: "from-green-900/20 to-teal-900/20",
+      accentColor: "green-400",
+      description: "Workflow automation and productivity enhancement tools",
+      technologies: ["Python", "Selenium", "Playwright", "N8N"],
+      projects: [
+        {
+          title: "clip_cutter_Webscrapping",
+          description: "A powerful Python automation tool that streamlines the process of creating and downloading video clips from YouTube videos using the ClipScutter web service. This tool automates the entire workflow from reading clip specifications to downloading the final video clips",
+          tech: ["Python", "Selenium", "PyAutoGUI", "Schedule", "SQLite"],
+          features: ["CSV-Driven Automation", "Intelligent URL Handling", "Automated Login" , "Bulk Download" , " Performance Optimized"],
+          duration: "15 days",
+          github: "https://github.com/2003Rk/clip_cutter_Webscrapping"
+        },
+        
       ]
     }
   ];
@@ -624,49 +666,54 @@ export default function App() {
           </div>
           
           {/* Category Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-4xl mx-auto justify-items-center px-4">
+          <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 max-w-7xl mx-auto justify-center px-4">
             {projectCategories.map((category, index) => (
               <button
                 key={index}
                 onClick={() => handleCategorySelect(category)}
-                className="group relative w-full p-6 sm:p-8 rounded-2xl sm:rounded-3xl border border-zinc-800 bg-zinc-950/50 hover:border-emerald-500/50 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-500/10 text-left"
+                className="group relative flex-1 w-full lg:w-auto min-w-0 p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-zinc-800 bg-zinc-950/50 hover:border-emerald-500/50 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-500/10 text-left"
               >
                 {/* Background Gradient */}
-                <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${category.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-2xl`}></div>
+                <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${category.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-2xl`}></div>
                 
                 {/* Icon */}
-                <div className={`text-4xl sm:text-5xl md:text-6xl mb-4 sm:mb-6 transform group-hover:scale-110 transition-transform duration-300`}>
+                <div className={`text-3xl sm:text-4xl mb-3 sm:mb-4 transform group-hover:scale-110 transition-transform duration-300`}>
                   {category.icon}
                 </div>
                 
                 {/* Title */}
-                <h3 className="text-xl sm:text-2xl font-light mb-2 sm:mb-3 text-zinc-100 group-hover:text-emerald-400 transition-colors duration-300">
+                <h3 className="text-lg sm:text-xl font-light mb-2 text-zinc-100 group-hover:text-emerald-400 transition-colors duration-300">
                   {category.name}
                 </h3>
                 
                 {/* Description */}
-                <p className="text-zinc-400 text-sm mb-6 leading-relaxed">
+                <p className="text-zinc-400 text-xs sm:text-sm mb-4 leading-relaxed">
                   {category.description}
                 </p>
                 
                 {/* Stats */}
-                <div className="flex items-center justify-between mb-6 pb-6 border-b border-zinc-800">
+                <div className="flex items-center justify-between mb-3 pb-3 border-b border-zinc-800">
                   <div>
-                    <div className="text-2xl font-light text-zinc-100">{category.totalProjects}</div>
+                    <div className="text-lg sm:text-xl font-light text-zinc-100">{category.projects.length}</div>
                     <div className="text-xs text-zinc-500 uppercase tracking-wider">Projects</div>
                   </div>
-                  <div className={`px-4 py-2 rounded-full bg-gradient-to-r ${category.borderGradient} text-white text-xs font-medium`}>
+                  <div className={`px-3 py-1 rounded-full bg-gradient-to-r ${category.borderGradient} text-white text-xs font-medium`}>
                     View All
                   </div>
                 </div>
                 
                 {/* Technologies */}
-                <div className="flex flex-wrap gap-2">
-                  {category.technologies.map((tech, i) => (
+                <div className="flex flex-wrap gap-1 sm:gap-2">
+                  {category.technologies.slice(0, 4).map((tech, i) => (
                     <span key={i} className="px-2 py-1 text-xs rounded-md bg-zinc-900 border border-zinc-800 text-zinc-400">
                       {tech}
                     </span>
                   ))}
+                  {category.technologies.length > 4 && (
+                    <span className="px-2 py-1 text-xs rounded-md bg-zinc-900 border border-zinc-800 text-zinc-400">
+                      +{category.technologies.length - 4}
+                    </span>
+                  )}
                 </div>
                 
                 {/* Arrow */}
