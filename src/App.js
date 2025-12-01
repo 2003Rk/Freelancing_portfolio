@@ -538,8 +538,10 @@ export default function App() {
 
       {/* Hero Section */}
       <section className="min-h-screen flex items-center justify-center px-4 sm:px-6 relative overflow-x-hidden bg-black">
-        {/* Smoke Cursor Effect */}
-        <SmokeEffectWrapper />
+        {/* Smoke Cursor Effect - Hidden on Mobile */}
+        <div className="hidden md:block">
+          <SmokeEffectWrapper />
+        </div>
 
         <div className="container mx-auto text-center relative z-10">
           {/* Profile Photo with Floating Animation */}
