@@ -16,8 +16,8 @@ export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [clientScrollIndex, setClientScrollIndex] = useState(0);
   const [testimonialScrollIndex, setTestimonialScrollIndex] = useState(0);
-  const [isClientAutoPlaying, setIsClientAutoPlaying] = useState(true);
-  const [isTestimonialAutoPlaying, setIsTestimonialAutoPlaying] = useState(true);
+  const [isClientAutoPlaying, setIsClientAutoPlaying] = useState(window.innerWidth >= 768);
+  const [isTestimonialAutoPlaying, setIsTestimonialAutoPlaying] = useState(window.innerWidth >= 768);
   const [clientTouchStart, setClientTouchStart] = useState(null);
   const [testimonialTouchStart, setTestimonialTouchStart] = useState(null);
   const gradientRef = useRef(null);
@@ -492,7 +492,7 @@ export default function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100">
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 overflow-x-hidden">
 
       {/* Header */}
       <header className={`fixed top-0 w-full z-40 transition-all duration-500 ${scrolled ? 'bg-zinc-950/90 backdrop-blur-xl border-b border-zinc-800/50' : 'bg-transparent'}`}>
@@ -537,7 +537,7 @@ export default function App() {
       </header>
 
       {/* Hero Section */}
-      <section className="min-h-screen flex items-center justify-center px-4 sm:px-6 relative overflow-x-hidden bg-black">
+      <section className="min-h-screen flex items-center justify-center px-4 sm:px-6 relative overflow-hidden bg-black w-full">
         {/* Smoke Cursor Effect - Hidden on Mobile */}
         <div className="hidden md:block">
           <SmokeEffectWrapper />
@@ -547,9 +547,9 @@ export default function App() {
           {/* Profile Photo with Floating Animation */}
           <div className="mb-8 sm:mb-12 flex justify-center">
             <div className="relative group">
-              {/* Animated rings */}
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-emerald-500/20 to-teal-500/20 blur-2xl group-hover:blur-3xl transition-all duration-500 animate-pulse"></div>
-              <div className="absolute inset-0 rounded-full border-2 border-emerald-500/30 animate-ping"></div>
+              {/* Animated rings - Simplified on mobile */}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-emerald-500/20 to-teal-500/20 blur-2xl md:group-hover:blur-3xl transition-all duration-500 md:animate-pulse"></div>
+              <div className="hidden md:block absolute inset-0 rounded-full border-2 border-emerald-500/30 animate-ping"></div>
               
               {/* Photo container */}
               <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-emerald-500/50 p-1 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 backdrop-blur-sm hover:border-emerald-400 transition-all duration-500 hover:scale-105 group-hover:shadow-2xl group-hover:shadow-emerald-500/30">
@@ -585,19 +585,19 @@ export default function App() {
             </a>
           </div>
 
-          <div className="flex gap-4 sm:gap-6 justify-center">
+          <div className="flex gap-3 sm:gap-6 justify-center flex-wrap">
             {[
               { Icon: Github, link: "https://github.com/2003Rk" },
               { Icon: Linkedin, link: "https://www.linkedin.com/in/rahul-kr2000/" },
               { Icon: Mail, link: "mailto:rahulkr99222@gmail.com" }
             ].map(({ Icon, link }, i) => (
-              <a key={i} href={link} className="w-12 h-12 sm:w-14 sm:h-14 border border-zinc-800 rounded-full flex items-center justify-center hover:border-emerald-500 hover:bg-emerald-500/5 transition-all duration-300 group touch-manipulation">
+              <a key={i} href={link} className="w-11 h-11 sm:w-14 sm:h-14 border border-zinc-800 rounded-full flex items-center justify-center hover:border-emerald-500 hover:bg-emerald-500/5 transition-all duration-300 group touch-manipulation">
                 <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-zinc-400 group-hover:text-emerald-400 transition-colors duration-300" />
               </a>
             ))}
           </div>
 
-          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 animate-bounce">
+          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 md:animate-bounce">
             <ChevronDown className="w-6 h-6 text-zinc-600" />
           </div>
         </div>
@@ -621,7 +621,7 @@ export default function App() {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 relative overflow-x-hidden">
+      <section id="about" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 relative overflow-hidden w-full">
         <div className="container mx-auto max-w-5xl relative z-10">
           <div className="grid md:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
             <div>
@@ -652,10 +652,10 @@ export default function App() {
       </section>
 
       {/* Projects Section */}
-      <section id="projects" className="py-16 sm:py-24 md:py-32 px-4 sm:px-6 bg-zinc-900/30 relative overflow-x-hidden">
-        {/* Decorative Elements */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl"></div>
+      <section id="projects" className="py-16 sm:py-24 md:py-32 px-4 sm:px-6 bg-zinc-900/30 relative overflow-hidden w-full">
+        {/* Decorative Elements - Hidden on mobile for performance */}
+        <div className="hidden md:block absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl"></div>
+        <div className="hidden md:block absolute bottom-0 right-1/4 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl"></div>
         
         <div className="container mx-auto relative z-10">
           <div className="text-center mb-12 sm:mb-16 md:mb-20">
@@ -731,7 +731,7 @@ export default function App() {
       {/* Project Modal */}
       {selectedCategory && (
         <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-2 sm:p-4 bg-black/90 modal-backdrop" onClick={handleModalClose}>
-          <div className="relative w-full max-w-6xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto bg-zinc-950 rounded-2xl sm:rounded-3xl border border-zinc-800 shadow-2xl modal-container modal-enter mt-4 sm:mt-0" onClick={(e) => e.stopPropagation()}>
+          <div className="relative w-full max-w-[95vw] sm:max-w-6xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto bg-zinc-950 rounded-2xl sm:rounded-3xl border border-zinc-800 shadow-2xl modal-container modal-enter mt-4 sm:mt-0" onClick={(e) => e.stopPropagation()}>
             {/* Header */}
             <div className={`sticky top-0 z-10 p-4 sm:p-6 md:p-8 border-b border-zinc-800 bg-gradient-to-r ${selectedCategory.bgGradient}`}>
               <div className="flex items-center justify-between">
@@ -835,7 +835,7 @@ export default function App() {
      
       
       {/* Auto-Scrolling Client Proof Section */}
-      <section id="clients" className="py-16 sm:py-24 md:py-32 px-4 sm:px-6 overflow-x-hidden">
+      <section id="clients" className="py-16 sm:py-24 md:py-32 px-4 sm:px-6 overflow-hidden w-full">
         <div className="container mx-auto mb-12 sm:mb-16">
           <div className="text-center mb-8 sm:mb-12">
             <div className="text-sm text-emerald-400 mb-4 tracking-wider uppercase">Client Proof</div>
@@ -873,9 +873,9 @@ export default function App() {
 
           {/* Loading State */}
           {loadingClients ? (
-            <div className="flex gap-6 justify-center">
+            <div className="flex gap-4 sm:gap-6 justify-center overflow-x-auto">
               {[1, 2, 3].map((i) => (
-                <div key={`loading-${i}`} className="flex-shrink-0 w-80 h-96 bg-zinc-900 border border-zinc-800 rounded-2xl p-6 animate-pulse">
+                <div key={`loading-${i}`} className="flex-shrink-0 w-[85vw] sm:w-80 h-96 bg-zinc-900 border border-zinc-800 rounded-2xl p-6 animate-pulse">
                   <div className="flex items-center gap-3 mb-4 pb-4 border-b border-zinc-800">
                     <div className="w-10 h-10 rounded-full bg-zinc-800"></div>
                     <div className="flex-1">
@@ -895,9 +895,10 @@ export default function App() {
           ) : (
             <div 
               ref={clientScrollRef}
-              className={`flex gap-6 transition-transform duration-500 ${isClientAutoPlaying ? 'animate-scroll' : ''}`}
+              className={`flex gap-4 sm:gap-6 transition-transform duration-500 ${isClientAutoPlaying ? 'animate-scroll' : ''}`}
               style={{
-                transform: `translateX(-${clientScrollIndex * (320 + 24)}px)`, // 320px card width + 24px gap
+                transform: `translateX(-${clientScrollIndex * (window.innerWidth < 768 ? (window.innerWidth * 0.85 + 16) : (320 + 24))}px)`,
+                willChange: isClientAutoPlaying ? 'transform' : 'auto',
                 animationPlayState: isClientAutoPlaying ? 'running' : 'paused'
               }}
               onMouseEnter={() => setIsClientAutoPlaying(false)}
@@ -914,7 +915,7 @@ export default function App() {
                     setSelectedProofCard(client);
                     setModalImageIndex(0);
                   }}
-                  className="flex-shrink-0 w-80 h-96 bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-emerald-500/50 transition-all duration-300 group cursor-pointer hover:scale-105 transform"
+                  className="flex-shrink-0 w-[85vw] sm:w-80 h-96 bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-emerald-500/50 transition-all duration-300 group cursor-pointer hover:scale-105 transform"
                 >
                   <div className="flex flex-col h-full">
                     {/* Header */}
@@ -993,7 +994,7 @@ export default function App() {
                     setSelectedProofCard(client);
                     setModalImageIndex(0);
                   }}
-                  className="flex-shrink-0 w-80 h-96 bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-emerald-500/50 transition-all duration-300 group cursor-pointer hover:scale-105 transform"
+                  className="flex-shrink-0 w-[85vw] sm:w-80 h-96 bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-emerald-500/50 transition-all duration-300 group cursor-pointer hover:scale-105 transform"
                 >
                   <div className="flex flex-col h-full">
                     {/* Header */}
@@ -1249,10 +1250,10 @@ export default function App() {
       )}
 
       {/* Testimonials Section */}
-      <section id="testimonials" className="py-16 sm:py-24 md:py-32 px-4 sm:px-6 bg-zinc-900/30 relative overflow-x-hidden">
-        {/* Background Elements */}
-        <div className="absolute top-10 left-10 w-72 h-72 bg-emerald-500/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-10 right-10 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl"></div>
+      <section id="testimonials" className="py-16 sm:py-24 md:py-32 px-4 sm:px-6 bg-zinc-900/30 relative overflow-hidden w-full">
+        {/* Background Elements - Hidden on mobile for performance */}
+        <div className="hidden md:block absolute top-10 left-10 w-72 h-72 bg-emerald-500/5 rounded-full blur-3xl"></div>
+        <div className="hidden md:block absolute bottom-10 right-10 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl"></div>
         
         <div className="container mx-auto relative z-10">
           <div className="text-center mb-20">
@@ -1325,7 +1326,7 @@ export default function App() {
             {loadingReviews ? (
               <div className="flex gap-6 justify-center">
                 {[1, 2, 3].map((i) => (
-                  <div key={`loading-testimonial-${i}`} className="flex-shrink-0 w-96 h-80 bg-zinc-900 border border-zinc-800 rounded-2xl p-6 animate-pulse">
+                  <div key={`loading-testimonial-${i}`} className="flex-shrink-0 w-[85vw] sm:w-96 h-80 bg-zinc-900 border border-zinc-800 rounded-2xl p-6 animate-pulse">
                     <div className="flex gap-1 mb-4">
                       {[1, 2, 3, 4, 5].map((s) => (
                         <div key={s} className="w-4 h-4 bg-zinc-800 rounded"></div>
@@ -1366,7 +1367,7 @@ export default function App() {
               >
                 {/* First Set - Real Firebase Data */}
                 {reviewsData.map((review, i) => (
-                  <div key={`first-${review.id || i}`} className="flex-shrink-0 w-80 h-96 bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-emerald-500/50 transition-all duration-300 group cursor-pointer hover:scale-105 transform">
+                  <div key={`first-${review.id || i}`} className="flex-shrink-0 w-[85vw] sm:w-80 h-96 bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-emerald-500/50 transition-all duration-300 group cursor-pointer hover:scale-105 transform">
                     <div className="flex flex-col h-full">
                       {/* Header with client info */}
                       <div className="flex items-center gap-3 mb-4 pb-4 border-b border-zinc-800">
@@ -1409,7 +1410,7 @@ export default function App() {
                 
                 {/* Second Set (for seamless loop) */}
                 {reviewsData.map((review, i) => (
-                  <div key={`second-${review.id || i}`} className="flex-shrink-0 w-80 h-96 bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-emerald-500/50 transition-all duration-300 group cursor-pointer hover:scale-105 transform">
+                  <div key={`second-${review.id || i}`} className="flex-shrink-0 w-[85vw] sm:w-80 h-96 bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-emerald-500/50 transition-all duration-300 group cursor-pointer hover:scale-105 transform">
                     <div className="flex flex-col h-full">
                       {/* Header with client info */}
                       <div className="flex items-center gap-3 mb-4 pb-4 border-b border-zinc-800">
